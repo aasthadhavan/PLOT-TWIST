@@ -3,140 +3,319 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PLOT TWIST | Terminal Access</title>
-    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&display=swap" rel="stylesheet">
+    <title>PlotTwist - Story</title>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,500;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         :root {
-            --neon-green: #39ff14;
-            --neon-red: #ff3131;
-            --bg-dark: #050505;
-            --terminal-gray: #1e1e1e;
+            --primary: #1a1a2e;
+            --secondary: #16213e;
+            --accent: #e94560;
+            --accent-warm: #f4a460;
+            --text-light: #e0e0e0;
+            --text-muted: #a0a0a0;
+            --border: #2d3561;
+            --success: #4ade80;
         }
 
         body {
-            background: var(--bg-dark);
-            color: var(--neon-green);
-            font-family: 'Fira Code', monospace;
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            overflow: hidden;
+            font-family: 'DM Sans', sans-serif;
+            background: linear-gradient(135deg, #0f1419 0%, #1a1a2e 50%, #16213e 100%);
+            color: var(--text-light);
+            min-height: 100vh;
         }
 
-        /* Full Screen Terminal Shell */
-        .terminal-window {
-            width: 90%;
-            height: 85vh;
-            background: rgba(0, 0, 0, 0.95);
-            border: 2px solid var(--neon-green);
-            border-radius: 10px;
-            box-shadow: 0 0 40px rgba(57, 255, 20, 0.15);
-            display: flex;
-            flex-direction: column;
-            position: relative;
-        }
-
-        /* Top Status Bar */
-        .status-bar {
-            padding: 10px 20px;
-            background: var(--neon-green);
-            color: black;
-            font-weight: bold;
+        .top-bar {
+            background: rgba(22, 33, 62, 0.6);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            padding: 20px 40px;
             display: flex;
             justify-content: space-between;
-            font-size: 0.8rem;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            animation: slideDown 0.6s ease;
         }
 
-        /* Main Story Content Area */
-        .content-area {
-            flex: 1;
-            padding: 40px;
-            overflow-y: auto;
-            border-bottom: 1px solid rgba(57, 255, 20, 0.3);
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        .story-text {
-            font-size: 1.5rem;
-            line-height: 1.8;
-            margin-bottom: 30px;
-            text-shadow: 0 0 5px var(--neon-green);
-        }
-
-        /* The Choice System: Grid Layout */
-        .choice-section {
-            padding: 30px;
-            background: rgba(255, 255, 255, 0.02);
-        }
-
-        .choice-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        .story-header {
+            display: flex;
+            align-items: center;
             gap: 20px;
         }
 
-        .choice-btn {
-            background: transparent;
-            border: 1px solid var(--neon-green);
-            color: var(--neon-green);
-            padding: 20px;
-            font-family: 'Fira Code', monospace;
-            font-size: 1rem;
-            text-transform: uppercase;
+        .back-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            color: var(--text-light);
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-            text-align: left;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            transition: all 0.3s ease;
+            text-decoration: none;
         }
 
-        .choice-btn:hover {
-            background: var(--neon-green);
-            color: black;
-            box-shadow: 0 0 20px var(--neon-green);
-            transform: translateY(-3px);
+        .back-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: rgba(233, 69, 96, 0.1);
+        }
+
+        .story-info h2 {
+            font-family: 'Crimson Text', serif;
+            font-size: 18px;
+            margin-bottom: 4px;
+        }
+
+        .chapter-badge {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .story-progress {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 200px;
+        }
+
+        .progress-bar {
+            flex: 1;
+            height: 3px;
+            background: var(--border);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent) 0%, var(--accent-warm) 100%);
+            width: 0%;
+        }
+
+        .game-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 60px 40px;
+            min-height: calc(100vh - 80px);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .scene-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            margin-bottom: 60px;
+        }
+
+        .narrative-text {
+            font-size: 16px;
+            line-height: 1.8;
+            margin-bottom: 30px;
+            color: var(--text-muted);
+            max-width: 700px;
+            animation: fadeInUp 0.6s ease 0.2s backwards;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .choices-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .choice-btn {
+            padding: 20px 24px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            color: var(--text-light);
+            cursor: pointer;
+            text-align: left;
+            font-size: 14px;
+            font-weight: 500;
+            line-height: 1.6;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+            overflow: hidden;
+            animation: slideInUp 0.6s ease backwards;
+        }
+
+        .choice-btn:nth-child(1) { animation-delay: 0.3s; }
+        .choice-btn:nth-child(2) { animation-delay: 0.4s; }
+        .choice-btn:nth-child(3) { animation-delay: 0.5s; }
+
+        @keyframes slideInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .choice-btn::before {
-            content: "> ";
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent 0%, rgba(233, 69, 96, 0.1) 50%, transparent 100%);
+            transition: left 0.6s ease;
+            z-index: 0;
         }
 
-        /* Glitch Animation for Psychological Effect */
-        .glitch {
-            animation: glitch-anim 0.2s infinite;
+        .choice-btn:hover::before { left: 100%; }
+
+        .choice-indicator {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--text-muted);
+            border-radius: 50%;
+            margin-right: 12px;
+            font-size: 12px;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 1;
         }
 
-        @keyframes glitch-anim {
-            0% { transform: translate(0); }
-            20% { transform: translate(-2px, 2px); }
-            40% { transform: translate(-2px, -2px); }
-            60% { transform: translate(2px, 2px); }
-            80% { transform: translate(2px, -2px); }
-            100% { transform: translate(0); }
+        .choice-btn:hover .choice-indicator {
+            border-color: var(--accent);
+            color: var(--accent);
+            box-shadow: 0 0 12px rgba(233, 69, 96, 0.3);
+        }
+
+        .choice-text {
+            position: relative;
+            z-index: 1;
+        }
+
+        .choice-btn:hover {
+            background: rgba(233, 69, 96, 0.1);
+            border-color: var(--accent);
+            transform: translateX(8px);
+            box-shadow: 0 8px 24px rgba(233, 69, 96, 0.2);
+        }
+
+        .path-indicator {
+            margin-top: 60px;
+            padding-top: 40px;
+            border-top: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .path-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .path-visualization {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .path-node {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--border);
+        }
+
+        .path-node.active {
+            background: var(--accent);
+        }
+
+        @media (max-width: 768px) {
+            .top-bar { padding: 16px 20px; }
+            .game-container { padding: 40px 20px; }
+            .narrative-text { font-size: 14px; }
+            .choice-btn { padding: 16px 20px; font-size: 13px; }
         }
     </style>
 </head>
 <body>
-    <div class="terminal-window">
-        <div class="status-bar">
-            <span>[SESSION: ACTIVE] [USER: {{ current_user.username }}]</span>
-            <span>[GIT_BRANCH: {{ branch }}]</span>
-        </div>
-        
-        <div class="content-area">
-            <div class="story-text">
-                {{ story.text }}
+    <div class="top-bar">
+        <div class="story-header">
+            <a href="/dashboard" class="back-btn">←</a>
+            <div class="story-info">
+                <h2>{{ story_title }}</h2>
+                <div class="chapter-badge">{{ node.get('chapter', 'Chapter') }}</div>
             </div>
         </div>
-
-        <div class="choice-section">
-            <form action="/choose" method="POST" class="choice-grid">
-                {% for choice in story.choices %}
-                <button type="submit" name="choice" value="{{ choice.id }}" class="choice-btn">
-                    {{ choice.label }}
-                </button>
-                {% endfor %}
-            </form>
+        <div class="story-progress">
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: {{ progress }}%;"></div>
+            </div>
         </div>
     </div>
+
+    <div class="game-container">
+        <div class="scene-container">
+            <div class="narrative-text">{{ node.get('text', 'The story continues...') }}</div>
+        </div>
+
+        <form method="POST" class="choices-container">
+            {% for choice in node.get('choices', []) %}
+                <button type="submit" name="choice" value="{{ choice.get('id', loop.index0) }}" class="choice-btn">
+                    <span class="choice-indicator">{{ loop.index }}</span>
+                    <span class="choice-text">{{ choice.get('label', 'Continue') }}</span>
+                </button>
+            {% else %}
+                <div style="text-align: center; color: var(--text-muted); padding: 40px;">
+                    <p>The end of this path...</p>
+                    <a href="/dashboard" style="color: var(--accent); margin-top: 20px; display: inline-block;">← Back to Stories</a>
+                </div>
+            {% endfor %}
+        </form>
+
+        <div class="path-indicator">
+            <div class="path-label">Paths Discovered</div>
+            <div class="path-visualization">
+                {% for i in range(5) %}
+                    <div class="path-node {% if i < (discovered_paths or 0) %}active{% endif %}"></div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('keydown', (e) => {
+            if (e.key >= '1' && e.key <= '9') {
+                const num = parseInt(e.key);
+                const buttons = document.querySelectorAll('button[name="choice"]');
+                if (buttons[num - 1]) buttons[num - 1].click();
+            }
+        });
+    </script>
 </body>
 </html>
