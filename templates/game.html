@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PLOT TWIST | Terminal Access</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --neon-green: #39ff14;
+            --neon-red: #ff3131;
+            --bg-dark: #050505;
+            --terminal-gray: #1e1e1e;
+        }
+
+        body {
+            background: var(--bg-dark);
+            color: var(--neon-green);
+            font-family: 'Fira Code', monospace;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Full Screen Terminal Shell */
+        .terminal-window {
+            width: 90%;
+            height: 85vh;
+            background: rgba(0, 0, 0, 0.95);
+            border: 2px solid var(--neon-green);
+            border-radius: 10px;
+            box-shadow: 0 0 40px rgba(57, 255, 20, 0.15);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* Top Status Bar */
+        .status-bar {
+            padding: 10px 20px;
+            background: var(--neon-green);
+            color: black;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+        }
+
+        /* Main Story Content Area */
+        .content-area {
+            flex: 1;
+            padding: 40px;
+            overflow-y: auto;
+            border-bottom: 1px solid rgba(57, 255, 20, 0.3);
+        }
+
+        .story-text {
+            font-size: 1.5rem;
+            line-height: 1.8;
+            margin-bottom: 30px;
+            text-shadow: 0 0 5px var(--neon-green);
+        }
+
+        /* The Choice System: Grid Layout */
+        .choice-section {
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .choice-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .choice-btn {
+            background: transparent;
+            border: 1px solid var(--neon-green);
+            color: var(--neon-green);
+            padding: 20px;
+            font-family: 'Fira Code', monospace;
+            font-size: 1rem;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            text-align: left;
+        }
+
+        .choice-btn:hover {
+            background: var(--neon-green);
+            color: black;
+            box-shadow: 0 0 20px var(--neon-green);
+            transform: translateY(-3px);
+        }
+
+        .choice-btn::before {
+            content: "> ";
+        }
+
+        /* Glitch Animation for Psychological Effect */
+        .glitch {
+            animation: glitch-anim 0.2s infinite;
+        }
+
+        @keyframes glitch-anim {
+            0% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+            100% { transform: translate(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="terminal-window">
+        <div class="status-bar">
+            <span>[SESSION: ACTIVE] [USER: {{ current_user.username }}]</span>
+            <span>[GIT_BRANCH: {{ branch }}]</span>
+        </div>
+        
+        <div class="content-area">
+            <div class="story-text">
+                {{ story.text }}
+            </div>
+        </div>
+
+        <div class="choice-section">
+            <form action="/choose" method="POST" class="choice-grid">
+                {% for choice in story.choices %}
+                <button type="submit" name="choice" value="{{ choice.id }}" class="choice-btn">
+                    {{ choice.label }}
+                </button>
+                {% endfor %}
+            </form>
+        </div>
+    </div>
+</body>
+</html>

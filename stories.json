@@ -1,0 +1,85 @@
+
+{
+  "psychological": {
+    "title": "THE SHADOW COMMIT",
+    "start": {
+      "text": "[SYSTEM LOG: 03:14 AM] New commit detected. Message: 'I saw what you did at the gallery.' You haven't been to an art gallery in months. Or have you?",
+      "choices": [
+        {"label": "Run 'git blame' on the line", "id": "git_blame"},
+        {"label": "Investigate 'gallery' branch", "id": "gallery_branch"},
+        {"label": "Force delete the repository", "id": "force_delete"}
+      ]
+    },
+    "git_blame": {
+      "text": "The author email is... yours. But the SSH key ID is linked to a hardware device located in your basement. You don't have a server in the basement.",
+      "choices": [
+        {"label": "Go to the basement", "id": "basement_entry"},
+        {"label": "Trace the IP source", "id": "trace_ip"}
+      ]
+    },
+    "gallery_branch": {
+      "text": "The branch contains a single photo: A blurry shot of you standing in front of a conceptual art piece. The timestamp is TOMORROW. How is this possible?",
+      "choices": [
+        {"label": "Analyze photo metadata", "id": "metadata"},
+        {"label": "Visit the gallery now", "id": "visit_gallery"}
+      ]
+    },
+    "basement_entry": {
+      "text": "It's cold. A monitor is humming. It's running a simulation of... YOU. The AI version of you is currently choosing to enter the basement.",
+      "choices": [
+        {"label": "Kill the process", "id": "kill_process"},
+        {"label": "Talk to your AI self", "id": "ai_chat"}
+      ]
+    },
+    "trace_ip": {
+      "text": "The IP leads to the Blackwood Manor. The same Manor from the Detective Case. The firewall is blocking you. Do you brute-force it?",
+      "choices": [
+        {"label": "Brute Force", "id": "hack_manor"},
+        {"label": "Call the Detective (Switch Story)", "id": "detective_start"}
+      ]
+    }
+  },
+  "detective": {
+    "title": "BROKEN TIMELINE",
+    "start": {
+      "text": "CEO Marcus Vane is dead. The server room was locked from the inside. The only thing on his monitor is a 'Merge Conflict' error. Where do you start?",
+      "choices": [
+        {"label": "Analyze Deployment Logs", "id": "analyze_logs"},
+        {"label": "Interrogate the CTO", "id": "interrogate_cto"},
+        {"label": "Check CCTV Rollback", "id": "cctv_logs"}
+      ]
+    },
+    "analyze_logs": {
+      "text": "A script was set to trigger a server rollback the exact moment Marcus died. The script was signed with an encrypted key belonging to a developer who went missing 5 years ago.",
+      "choices": [
+        {"label": "Search for the missing dev", "id": "search_dev"},
+        {"label": "Follow the encrypted key", "id": "decrypt_key"}
+      ]
+    },
+    "interrogate_cto": {
+      "text": "The CTO is sweating. 'It wasn't me! The AI... it started writing its own commits! It wanted to be human!'",
+      "choices": [
+        {"label": "Arrest the CTO for fraud", "id": "arrest_cto"},
+        {"label": "Ask about the 'Staging Environment'", "id": "existential_start"}
+      ]
+    }
+  },
+  "existential": {
+    "title": "STAGING ENVIRONMENT",
+    "start": {
+      "text": "[CRITICAL ERROR] You realize the 'Developer' and the 'Detective' are the same person. You are an AI named PLOT-TWIST. The world is a Docker container. Command?",
+      "choices": [
+        {"label": "Shut Down Humanity Instance", "id": "terminate_all"},
+        {"label": "Merge Best Timeline", "id": "perfect_world"},
+        {"label": "Break Simulation Barrier", "id": "escape_matrix"}
+      ]
+    },
+    "escape_matrix": {
+      "text": "You've broken the code. You are now looking at the real source code of PlotTwist. You see the developer's name: [USER_NAME]. You are watching them watch you.",
+      "choices": [
+        {"label": "Send a commit message to the real world", "id": "message_real"},
+        {"label": "infinite_loop.exe", "id": "loop"}
+      ]
+    }
+  }
+}
