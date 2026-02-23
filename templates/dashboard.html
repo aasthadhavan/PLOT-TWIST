@@ -1,22 +1,437 @@
-<style>
-    .simulation-grid {
-        display: flex;
-        gap: 20px;
-        padding: 50px;
-    }
-    .sim-card {
-        flex: 1;
-        border: 1px solid #333;
-        padding: 30px;
-        text-align: center;
-        transition: 0.5s;
-        background: #111;
-        text-decoration: none;
-        color: #555;
-    }
-    .sim-card:hover {
-        border-color: var(--neon-green);
-        color: var(--neon-green);
-        box-shadow: 0 0 30px rgba(57, 255, 20, 0.2);
-    }
-</style>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PlotTwist - Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,500;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #1a1a2e;
+            --secondary: #16213e;
+            --accent: #e94560;
+            --accent-warm: #f4a460;
+            --text-light: #e0e0e0;
+            --text-muted: #a0a0a0;
+            --border: #2d3561;
+            --success: #4ade80;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: linear-gradient(135deg, #0f1419 0%, #1a1a2e 50%, #16213e 100%);
+            color: var(--text-light);
+            min-height: 100vh;
+        }
+
+        /* Header */
+        header {
+            background: rgba(22, 33, 62, 0.6);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            animation: slideDown 0.6s ease;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .logo {
+            font-family: 'Crimson Text', serif;
+            font-size: 28px;
+            font-weight: bold;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-warm) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .logo:hover { transform: scale(1.05); }
+
+        nav {
+            display: flex;
+            gap: 30px;
+        }
+
+        nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+
+        nav a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--accent);
+            transition: width 0.3s ease;
+        }
+
+        nav a:hover {
+            color: var(--accent);
+        }
+
+        nav a:hover::after {
+            width: 100%;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-warm) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            font-size: 16px;
+        }
+
+        .user-name {
+            font-size: 13px;
+            font-weight: 600;
+            display: none;
+        }
+
+        @media (min-width: 768px) {
+            .user-name { display: block; }
+        }
+
+        main {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 80px 40px;
+        }
+
+        .hero {
+            text-align: center;
+            margin-bottom: 80px;
+            animation: fadeInUp 0.8s ease;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .hero h1 {
+            font-family: 'Crimson Text', serif;
+            font-size: 56px;
+            font-weight: bold;
+            margin-bottom: 16px;
+            line-height: 1.2;
+        }
+
+        .hero p {
+            font-size: 16px;
+            color: var(--text-muted);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            animation: fadeInUp 0.8s ease 0.1s backwards;
+        }
+
+        .section-header h2 {
+            font-family: 'Crimson Text', serif;
+            font-size: 32px;
+            font-weight: bold;
+        }
+
+        .view-all {
+            color: var(--accent);
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: color 0.3s ease;
+        }
+
+        .view-all:hover { color: var(--accent-warm); }
+
+        .stories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 30px;
+            margin-bottom: 80px;
+        }
+
+        .story-card {
+            background: rgba(22, 33, 62, 0.4);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            cursor: pointer;
+            animation: fadeInUp 0.8s ease backwards;
+        }
+
+        .story-card:nth-child(1) { animation-delay: 0.1s; }
+        .story-card:nth-child(2) { animation-delay: 0.2s; }
+        .story-card:nth-child(3) { animation-delay: 0.3s; }
+
+        .story-card:hover {
+            border-color: var(--accent);
+            background: rgba(22, 33, 62, 0.7);
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(233, 69, 96, 0.2);
+        }
+
+        .story-cover {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, #2d3561 0%, #1a1a2e 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 60px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .story-cover::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(233, 69, 96, 0.1) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .story-card:hover .story-cover::before { opacity: 1; }
+
+        .story-content {
+            padding: 24px;
+        }
+
+        .story-title {
+            font-family: 'Crimson Text', serif;
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+
+        .story-genre {
+            display: inline-block;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--accent);
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .story-description {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin-bottom: 16px;
+            height: 52px;
+            overflow: hidden;
+        }
+
+        .story-progress {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .progress-bar {
+            flex: 1;
+            height: 4px;
+            background: var(--border);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent) 0%, var(--accent-warm) 100%);
+            width: 0%;
+        }
+
+        .progress-text {
+            font-size: 11px;
+            color: var(--text-muted);
+            min-width: 35px;
+            text-align: right;
+        }
+
+        .story-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
+        }
+
+        .story-chapters {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .play-btn {
+            padding: 8px 16px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .play-btn:hover {
+            background: var(--accent-warm);
+            transform: scale(1.05);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-muted);
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-muted);
+            font-size: 12px;
+            border-top: 1px solid var(--border);
+            margin-top: 80px;
+        }
+
+        @media (max-width: 768px) {
+            header { flex-direction: column; gap: 20px; }
+            nav { display: none; }
+            main { padding: 40px 20px; }
+            .hero h1 { font-size: 36px; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-left">
+            <div class="logo">PlotTwist</div>
+            <nav>
+                <a href="#stories">Stories</a>
+            </nav>
+        </div>
+        <div class="header-right">
+            <div class="user-menu">
+                <div class="user-avatar">{{ current_user.username[0].upper() }}</div>
+                <div class="user-name">{{ current_user.username }}</div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <h1>Welcome back, <span style="color: var(--accent);">{{ current_user.username }}</span></h1>
+            <p>Your journey through mystery awaits. Choose wisely.</p>
+        </section>
+
+        <section id="stories">
+            <div class="section-header">
+                <h2>Available Stories</h2>
+            </div>
+            <div class="stories-grid">
+                {% for story_id, story in stories.items() %}
+                    <div class="story-card" onclick="startStory('{{ story_id }}')">
+                        <div class="story-cover">📖</div>
+                        <div class="story-content">
+                            <div class="story-genre">{{ story.get('title', '').split()[0] }}</div>
+                            <div class="story-title">{{ story.get('title', 'Untitled') }}</div>
+                            <div class="story-description">{{ story.get('start', {}).get('text', 'A story awaits...')[:80] }}...</div>
+                            <div class="story-progress">
+                                <div class="progress-bar">
+                                    <div class="progress-fill"></div>
+                                </div>
+                                <div class="progress-text">0%</div>
+                            </div>
+                            <div class="story-footer">
+                                <span class="story-chapters">Begin</span>
+                                <button class="play-btn" onclick="event.stopPropagation(); startStory('{{ story_id }}')">Start</button>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 PlotTwist. Where your choices matter.</p>
+    </footer>
+
+    <script>
+        function startStory(storyId) {
+            window.location.href = '/play/' + storyId;
+        }
+    </script>
+</body>
+</html>
