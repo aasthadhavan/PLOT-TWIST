@@ -2,320 +2,64 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PlotTwist - Story</title>
-    <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,500;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
+    <title>Plot Twist - Game</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        :root {
-            --primary: #1a1a2e;
-            --secondary: #16213e;
-            --accent: #e94560;
-            --accent-warm: #f4a460;
-            --text-light: #e0e0e0;
-            --text-muted: #a0a0a0;
-            --border: #2d3561;
-            --success: #4ade80;
-        }
-
         body {
-            font-family: 'DM Sans', sans-serif;
-            background: linear-gradient(135deg, #0f1419 0%, #1a1a2e 50%, #16213e 100%);
-            color: var(--text-light);
-            min-height: 100vh;
-        }
-
-        .top-bar {
-            background: rgba(22, 33, 62, 0.6);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid var(--border);
-            padding: 20px 40px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            animation: slideDown 0.6s ease;
-        }
-
-        @keyframes slideDown {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .story-header {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .back-btn {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border);
-            color: var(--text-light);
-            width: 40px;
-            height: 40px;
-            border-radius: 8px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            transition: all 0.3s ease;
-            text-decoration: none;
-        }
-
-        .back-btn:hover {
-            border-color: var(--accent);
-            color: var(--accent);
-            background: rgba(233, 69, 96, 0.1);
-        }
-
-        .story-info h2 {
-            font-family: 'Crimson Text', serif;
-            font-size: 18px;
-            margin-bottom: 4px;
-        }
-
-        .chapter-badge {
-            font-size: 11px;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .story-progress {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            min-width: 200px;
-        }
-
-        .progress-bar {
-            flex: 1;
-            height: 3px;
-            background: var(--border);
-            border-radius: 2px;
+            margin: 0; padding: 0; height: 100vh;
+            display: flex; justify-content: center; align-items: center;
+            background: radial-gradient(circle, #1a1a2e, #16213e, #0f3460);
+            font-family: 'Segoe UI', sans-serif; color: white;
             overflow: hidden;
         }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--accent) 0%, var(--accent-warm) 100%);
-            width: 0%;
-        }
-
-        .game-container {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 60px 40px;
-            min-height: calc(100vh - 80px);
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        .scene-container {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            margin-bottom: 60px;
-        }
-
-        .narrative-text {
-            font-size: 16px;
-            line-height: 1.8;
-            margin-bottom: 30px;
-            color: var(--text-muted);
-            max-width: 700px;
-            animation: fadeInUp 0.6s ease 0.2s backwards;
-        }
-
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .choices-container {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .choice-btn {
-            padding: 20px 24px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 2px solid var(--border);
-            border-radius: 10px;
-            color: var(--text-light);
-            cursor: pointer;
-            text-align: left;
-            font-size: 14px;
-            font-weight: 500;
-            line-height: 1.6;
-            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-            position: relative;
-            overflow: hidden;
-            animation: slideInUp 0.6s ease backwards;
-        }
-
-        .choice-btn:nth-child(1) { animation-delay: 0.3s; }
-        .choice-btn:nth-child(2) { animation-delay: 0.4s; }
-        .choice-btn:nth-child(3) { animation-delay: 0.5s; }
-
-        @keyframes slideInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .choice-btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent 0%, rgba(233, 69, 96, 0.1) 50%, transparent 100%);
-            transition: left 0.6s ease;
-            z-index: 0;
-        }
-
-        .choice-btn:hover::before { left: 100%; }
-
-        .choice-indicator {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 24px;
-            height: 24px;
-            border: 2px solid var(--text-muted);
-            border-radius: 50%;
-            margin-right: 12px;
-            font-size: 12px;
-            font-weight: 700;
-            transition: all 0.3s ease;
-            position: relative;
-            z-index: 1;
-        }
-
-        .choice-btn:hover .choice-indicator {
-            border-color: var(--accent);
-            color: var(--accent);
-            box-shadow: 0 0 12px rgba(233, 69, 96, 0.3);
-        }
-
-        .choice-text {
-            position: relative;
-            z-index: 1;
-        }
-
-        .choice-btn:hover {
-            background: rgba(233, 69, 96, 0.1);
-            border-color: var(--accent);
-            transform: translateX(8px);
-            box-shadow: 0 8px 24px rgba(233, 69, 96, 0.2);
-        }
-
-        .path-indicator {
-            margin-top: 60px;
-            padding-top: 40px;
-            border-top: 1px solid var(--border);
+        .floating-card {
+            background: rgba(255, 255, 255, 0.07);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 30px;
+            padding: 60px;
+            width: 85%; max-width: 800px;
             text-align: center;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            animation: floatAnim 6s ease-in-out infinite;
         }
-
-        .path-label {
-            font-size: 11px;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 16px;
+        @keyframes floatAnim {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-25px); }
         }
-
-        .path-visualization {
-            display: flex;
-            justify-content: center;
-            gap: 8px;
+        h1 { color: #4ecca3; font-size: 2.5rem; margin-bottom: 20px; }
+        p { font-size: 1.3rem; line-height: 1.8; opacity: 0.85; margin-bottom: 40px; }
+        .choices { display: flex; flex-direction: column; gap: 20px; }
+        .btn {
+            background: rgba(78, 204, 163, 0.2);
+            border: 1px solid #4ecca3;
+            color: #4ecca3;
+            padding: 15px 30px;
+            border-radius: 15px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: 0.3s;
         }
-
-        .path-node {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: var(--border);
-        }
-
-        .path-node.active {
-            background: var(--accent);
-        }
-
-        @media (max-width: 768px) {
-            .top-bar { padding: 16px 20px; }
-            .game-container { padding: 40px 20px; }
-            .narrative-text { font-size: 14px; }
-            .choice-btn { padding: 16px 20px; font-size: 13px; }
-        }
+        .btn:hover { background: #4ecca3; color: #1a1a2e; transform: scale(1.05); }
+        .exit-btn { border-color: #e94560; color: #e94560; }
+        .exit-btn:hover { background: #e94560; color: white; }
     </style>
 </head>
 <body>
-    <div class="top-bar">
-        <div class="story-header">
-            <a href="/dashboard" class="back-btn">←</a>
-            <div class="story-info">
-                <h2>{{ story_title }}</h2>
-                <div class="chapter-badge">{{ node.get('chapter', 'Chapter') }}</div>
-            </div>
-        </div>
-        <div class="story-progress">
-            <div class="progress-bar">
-                <div class="progress-fill" style="width: {{ progress }}%;"></div>
-            </div>
-        </div>
-    </div>
-
-    <div class="game-container">
-        <div class="scene-container">
-            <div class="narrative-text">{{ node.get('text', 'The story continues...') }}</div>
-        </div>
-
-        <form method="POST" class="choices-container">
-            {% for choice in node.get('choices', []) %}
-                <button type="submit" name="choice" value="{{ choice.get('id', loop.index0) }}" class="choice-btn">
-                    <span class="choice-indicator">{{ loop.index }}</span>
-                    <span class="choice-text">{{ choice.get('label', 'Continue') }}</span>
-                </button>
-            {% else %}
-                <div style="text-align: center; color: var(--text-muted); padding: 40px;">
-                    <p>The end of this path...</p>
-                    <a href="/dashboard" style="color: var(--accent); margin-top: 20px; display: inline-block;">← Back to Stories</a>
-                </div>
-            {% endfor %}
-        </form>
-
-        <div class="path-indicator">
-            <div class="path-label">Paths Discovered</div>
-            <div class="path-visualization">
-                {% for i in range(5) %}
-                    <div class="path-node {% if i < (discovered_paths or 0) %}active{% endif %}"></div>
+    <div class="floating-card">
+        <h1>{{ node.title }}</h1>
+        <p>{{ node.text }}</p>
+        <div class="choices">
+            {% if not is_ending %}
+                {% for choice in node.choices %}
+                    <a href="{{ url_for('play', episode_id=episode_id, node_id=choice.next) }}" class="btn">
+                        {{ choice.text }}
+                    </a>
                 {% endfor %}
-            </div>
+            {% else %}
+                <p><strong>Timeline Concluded.</strong></p>
+                <a href="{{ url_for('dashboard') }}" class="btn exit-btn">Return to Dashboard</a>
+            {% endif %}
         </div>
     </div>
-
-    <script>
-        document.addEventListener('keydown', (e) => {
-            if (e.key >= '1' && e.key <= '9') {
-                const num = parseInt(e.key);
-                const buttons = document.querySelectorAll('button[name="choice"]');
-                if (buttons[num - 1]) buttons[num - 1].click();
-            }
-        });
-    </script>
 </body>
 </html>
