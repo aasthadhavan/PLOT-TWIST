@@ -109,13 +109,8 @@ def play(episode_id, node_id):
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-
-    app.run(debug=True)
-
-
         print("✅ Database initialized")
-        print(f"✅ Loaded {len(story_data)} stories: {list(story_data.keys())}")
-    app.run(debug=True, port=5000)
-
+       
     app.run(debug=True)
+
 
