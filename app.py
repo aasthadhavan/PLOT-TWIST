@@ -19,10 +19,35 @@ try:
 except:
     repo = git.Repo.init(REPO_PATH)
 
+
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     password = db.Column(db.String(120), nullable=False)
+
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'login'
+
+login_manager.login_message = 'Please log in to continue.'
+
+login_manager.login_message_category = 'info'
+
+
+
+
+# Git Engine Initialization
+REPO_PATH = os.getcwd()
+try:
+    repo = git.Repo(REPO_PATH)
+except:
+    repo = git.Repo.init(REPO_PATH)
+
+class User(UserMixin, db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80), unique=True, nullable=False)
+    password = db.Column(db.String(120), nullable=False)
+
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -84,5 +109,8 @@ def play(episode_id, node_id):
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-    print("✅ Database initialized")
+        print("✅ Database initialized")
+       
     app.run(debug=True)
+
+
