@@ -9,33 +9,11 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'plottwist_secret_123'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///plottwist.db'
 db = SQLAlchemy(app)
-login_manager = LoginManager(app)
-login_manager.login_view = 'login'
-
-# Git Engine Initialization
-REPO_PATH = os.getcwd()
-try:
-    repo = git.Repo(REPO_PATH)
-except:
-    repo = git.Repo.init(REPO_PATH)
-
-
-class User(UserMixin, db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80), unique=True, nullable=False)
-    password = db.Column(db.String(120), nullable=False)
 
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
-login_manager.login_message = 'Please log in to continue.'
-
-login_manager.login_message_category = 'info'
-
-
-
-
 # Git Engine Initialization
 REPO_PATH = os.getcwd()
 try:
@@ -43,18 +21,17 @@ try:
 except:
     repo = git.Repo.init(REPO_PATH)
 
+# ONLY ONE USER CLASS ALLOWED
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     password = db.Column(db.String(120), nullable=False)
-
 
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
 
 def get_story_data():
-    # Ensure stories.json is in your root folder
     with open('stories.json', 'r') as f:
         return json.load(f)
 
@@ -76,7 +53,6 @@ def login():
 @login_required
 def dashboard():
     data = get_story_data()
-    # Pulling episodes list from your JSON
     stories = data.get('episodes', [])
     return render_template('dashboard.html', stories=stories)
 
@@ -85,32 +61,20 @@ def dashboard():
 def play(episode_id, node_id):
     data = get_story_data()
     episode = next((e for e in data['episodes'] if e['id'] == episode_id), None)
-    
-    if not episode:
-        return redirect(url_for('dashboard'))
-        
+    if not episode: return redirect(url_for('dashboard'))
     node = episode['nodes'].get(node_id)
 
-    # SCM LOGIC: Create/Switch to a branch for this specific choice
     branch_name = f"path-{current_user.username}-{node_id}"
     try:
         repo.git.checkout('-b', branch_name)
     except:
         repo.git.checkout(branch_name)
 
-    # FIX: If 'choices' is empty or missing, it's an ending.
     is_ending = not node.get('choices')
-
-    return render_template('game.html', 
-                           node=node, 
-                           episode_id=episode_id, 
-                           is_ending=is_ending)
+    return render_template('game.html', node=node, episode_id=episode_id, is_ending=is_ending)
 
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
         print("✅ Database initialized")
-       
     app.run(debug=True)
-
-
