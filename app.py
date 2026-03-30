@@ -11,11 +11,11 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///plottwist.db'
 db = SQLAlchemy(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
-<<<<<<< Updated upstream
+
 login_manager.login_message = 'Please log in to continue.'
 
 login_manager.login_message_category = 'info'
-=======
+
 
 # Git Engine Initialization
 REPO_PATH = os.getcwd()
@@ -28,7 +28,7 @@ class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     password = db.Column(db.String(120), nullable=False)
->>>>>>> Stashed changes
+
 
 @login_manager.user_loader
 def load_user(user_id):
