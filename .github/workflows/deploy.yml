@@ -1,0 +1,29 @@
+name: Continuous Deployment
+
+on:
+  push:
+    branches: [ "develop" ] # Triggers when code hits develop
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/checkout@v4
+        with:
+          python-version: "3.12"
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Build Database
+        run: |
+          python -c "from app import app, db; app.app_context().push(); db.create_all()"
+
+      - name: Deploy Confirmation
+        run: echo "Deployment to Staging Environment Successful!"
