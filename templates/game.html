@@ -2,65 +2,157 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Plot Twist - Game</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PlotTwist — Simulation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&family=JetBrains+Mono&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --bg: #F8FAFC;
+            --card-bg: #FFFFFF;
+            --primary: #0D9488;
+            --accent: #7C3AED;
+            --text-main: #1E293B;
+            --text-muted: #64748B;
+            --border: #E2E8F0;
+        }
+
+        * { margin:0; padding:0; box-sizing: border-box; }
+
         body {
-            margin: 0; padding: 0; height: 100vh;
-            display: flex; justify-content: center; align-items: center;
-            background: radial-gradient(circle, #1a1a2e, #16213e, #0f3460);
-            font-family: 'Segoe UI', sans-serif; color: white;
-            overflow: hidden;
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
         }
-        .floating-card {
-            background: rgba(255, 255, 255, 0.07);
-            backdrop-filter: blur(25px);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: 30px;
+
+        .game-card {
+            background: var(--card-bg);
+            width: 100%;
+            max-width: 800px;
             padding: 60px;
-            width: 85%; max-width: 800px;
-            text-align: center;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-            animation: floatAnim 6s ease-in-out infinite;
+            border-radius: 32px;
+            box-shadow: 
+                0 25px 50px -12px rgba(0,0,0,0.05),
+                0 0 0 1px rgba(0,0,0,0.02);
+            animation: fadeIn 0.8s ease;
         }
-        @keyframes floatAnim {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-25px); }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.98); }
+            to { opacity: 1; transform: scale(1); }
         }
-        h1 { color: #4ecca3; font-size: 2.5rem; margin-bottom: 20px; }
-        p { font-size: 1.3rem; line-height: 1.8; opacity: 0.85; margin-bottom: 40px; }
-        .choices { display: flex; flex-direction: column; gap: 20px; }
-        .btn {
-            background: rgba(78, 204, 163, 0.2);
-            border: 1px solid #4ecca3;
-            color: #4ecca3;
-            padding: 15px 30px;
-            border-radius: 15px;
+
+        .node-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 24px;
+            display: block;
+        }
+
+        .story-text {
+            font-size: 24px;
+            line-height: 1.6;
+            font-weight: 300;
+            color: var(--text-main);
+            margin-bottom: 48px;
+        }
+
+        .choices {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .choice-btn {
+            padding: 18px 24px;
+            background: #F1F5F9;
+            border: 1px solid var(--border);
+            border-radius: 16px;
             text-decoration: none;
-            font-weight: bold;
-            transition: 0.3s;
+            color: var(--text-main);
+            font-weight: 600;
+            font-size: 15px;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
-        .btn:hover { background: #4ecca3; color: #1a1a2e; transform: scale(1.05); }
-        .exit-btn { border-color: #e94560; color: #e94560; }
-        .exit-btn:hover { background: #e94560; color: white; }
+
+        .choice-btn:hover {
+            background: #FFFFFF;
+            border-color: var(--primary);
+            transform: translateX(8px);
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05);
+            color: var(--primary);
+        }
+
+        .choice-btn::after {
+            content: '→';
+            opacity: 0;
+            transform: translateX(-10px);
+            transition: all 0.2s;
+        }
+
+        .choice-btn:hover::after {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .ending {
+            text-align: center;
+            padding-top: 20px;
+        }
+
+        .btn-exit {
+            display: inline-block;
+            margin-top: 32px;
+            padding: 14px 32px;
+            background: var(--text-main);
+            color: white;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .btn-exit:hover {
+            background: var(--accent);
+            transform: translateY(-2px);
+        }
+
     </style>
 </head>
 <body>
-    <div class="floating-card">
-        <h1>{{ node.title if node.title else "STORY FRAGMENT" }}</h1>
-        <p>{{ node.text }}</p>
+
+    <div class="game-card">
+        <span class="node-title">// {{ node.title if node.title else "SIMULATION_DATA" }}</span>
+        
+        <div class="story-text">
+            {{ node.text }}
+        </div>
+
         <div class="choices">
             {% if not is_ending %}
                 {% for choice in node.choices %}
-                    <a href="{{ url_for('play', story_id=story_id, node_id=choice.id) }}" class="btn">
+                    <a href="{{ url_for('play', story_id=story_id, node_id=choice.id) }}" class="choice-btn">
                         {{ choice.label }}
                     </a>
                 {% endfor %}
             {% else %}
-                <p><strong>Timeline Concluded.</strong></p>
-                <a href="{{ url_for('dashboard') }}" class="btn exit-btn">Return to Dashboard</a>
+                <div class="ending">
+                    <p style="color: var(--text-muted); font-size: 14px;">[ SIMULATION CONCLUDED ]</p>
+                    <a href="{{ url_for('dashboard') }}" class="btn-exit">Return to Core</a>
+                </div>
             {% endif %}
         </div>
     </div>
+
 </body>
 </html>
-<!-- UI updated: Glassmorphism floating cards -->
