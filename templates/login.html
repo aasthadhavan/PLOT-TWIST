@@ -3,418 +3,185 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PlotTwist — Enter</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+    <title>PlotTwist — Sign In</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&family=Outfit:wght@300;400;600&family=JetBrains+Mono&display=swap" rel="stylesheet">
     <style>
-        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-
         :root {
-            --bg:       #0B1C2D;
-            --navy:     #0d2137;
-            --purple:   #5E3B8C;
-            --purple-l: #7B5FBF;
-            --teal:     #1CA7A6;
-            --teal-l:   #26c8c7;
-            --white:    #F5F5F5;
-            --muted:    #8ca0b3;
-            --border:   rgba(94,59,140,0.35);
-            --glass:    rgba(13,33,55,0.7);
-            --error:    #e05a6d;
-            --success:  #1CA7A6;
+            --bg: #F8FAFC;
+            --card-bg: #FFFFFF;
+            --primary: #0D9488;
+            --primary-hover: #0F766E;
+            --text-main: #1E293B;
+            --text-muted: #64748B;
+            --border: #E2E8F0;
+            --accent: #7C3AED;
+            --error: #EF4444;
         }
 
-        html { scroll-behavior: smooth; }
+        * { margin:0; padding:0; box-sizing: border-box; }
 
         body {
-            font-family: 'Crimson Text', Georgia, serif;
-            background: var(--bg);
-            color: var(--white);
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg);
+            background-image: 
+                radial-gradient(at 100% 0%, rgba(13, 148, 136, 0.05) 0px, transparent 50%),
+                radial-gradient(at 0% 100%, rgba(124, 58, 237, 0.05) 0px, transparent 50%);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            overflow: hidden;
-            position: relative;
+            color: var(--text-main);
         }
 
-        /* ── ANIMATED BACKGROUND ── */
-        .bg-canvas {
-            position: fixed; inset: 0; z-index: 0; overflow: hidden;
-        }
-        .bg-canvas::before {
-            content: '';
-            position: absolute; inset: -50%;
-            background: radial-gradient(ellipse 80% 60% at 20% 30%, rgba(94,59,140,0.25) 0%, transparent 60%),
-                        radial-gradient(ellipse 60% 80% at 80% 70%, rgba(28,167,166,0.15) 0%, transparent 60%),
-                        radial-gradient(ellipse 100% 100% at 50% 50%, rgba(11,28,45,1) 50%, transparent 100%);
-            animation: bgPulse 12s ease-in-out infinite alternate;
-        }
-        @keyframes bgPulse {
-            0%   { transform: scale(1) rotate(0deg); }
-            100% { transform: scale(1.08) rotate(2deg); }
+        .login-card {
+            background: var(--card-bg);
+            width: 100%;
+            max-width: 420px;
+            padding: 48px;
+            border-radius: 24px;
+            box-shadow: 0 20px 40px -10px rgba(0,0,0,0.05), 0 0 0 1px rgba(0,0,0,0.02);
+            animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        /* Floating particles */
-        .particles { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
-        .particle {
-            position: absolute;
-            width: 2px; height: 2px;
-            background: var(--teal);
-            border-radius: 50%;
-            opacity: 0;
-            animation: drift linear infinite;
-        }
-        @keyframes drift {
-            0%   { opacity: 0; transform: translateY(100vh) translateX(0); }
-            10%  { opacity: 0.6; }
-            90%  { opacity: 0.3; }
-            100% { opacity: 0; transform: translateY(-10vh) translateX(40px); }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Grid lines */
-        .grid-overlay {
-            position: fixed; inset: 0; z-index: 1;
-            background-image:
-                linear-gradient(rgba(28,167,166,0.04) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(28,167,166,0.04) 1px, transparent 1px);
-            background-size: 60px 60px;
-            pointer-events: none;
-        }
-
-        /* ── CARD ── */
-        .wrapper {
-            position: relative; z-index: 10;
-            width: 100%; max-width: 440px;
-            padding: 24px;
-        }
-
-        .card {
-            background: var(--glass);
-            backdrop-filter: blur(24px);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 48px 40px 40px;
-            box-shadow:
-                0 0 0 1px rgba(28,167,166,0.08),
-                0 32px 64px rgba(0,0,0,0.5),
-                inset 0 1px 0 rgba(255,255,255,0.06);
-            animation: cardIn 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-        }
-        @keyframes cardIn {
-            from { opacity: 0; transform: translateY(40px) scale(0.96); }
-            to   { opacity: 1; transform: translateY(0)    scale(1); }
-        }
-
-        /* Corner accents */
-        .card::before, .card::after {
-            content: '';
-            position: absolute;
-            width: 20px; height: 20px;
-            border-color: var(--teal);
-            border-style: solid;
-            opacity: 0.5;
-        }
-        .card::before { top: -1px; left: -1px; border-width: 2px 0 0 2px; border-radius: 20px 0 0 0; }
-        .card::after  { bottom: -1px; right: -1px; border-width: 0 2px 2px 0; border-radius: 0 0 20px 0; }
-
-        /* ── HEADER ── */
-        .logo-wrap { text-align: center; margin-bottom: 36px; }
-
-        .logo-icon {
-            font-size: 36px;
-            display: block;
-            margin-bottom: 12px;
-            animation: iconFloat 4s ease-in-out infinite;
-        }
-        @keyframes iconFloat {
-            0%,100% { transform: translateY(0); filter: drop-shadow(0 0 12px rgba(28,167,166,0.6)); }
-            50%      { transform: translateY(-6px); filter: drop-shadow(0 0 20px rgba(94,59,140,0.8)); }
-        }
-
+        .header { text-align: center; margin-bottom: 40px; }
+        
         .logo {
             font-family: 'Cinzel', serif;
-            font-size: 36px;
-            font-weight: 700;
+            font-size: 32px;
             letter-spacing: 4px;
-            background: linear-gradient(135deg, var(--teal) 0%, var(--white) 50%, var(--purple-l) 100%);
+            background: linear-gradient(135deg, var(--primary), var(--accent));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            background-clip: text;
-            display: block;
             margin-bottom: 8px;
         }
 
-        .tagline {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 11px;
-            color: var(--muted);
-            letter-spacing: 3px;
+        .subtitle {
+            font-size: 14px;
+            color: var(--text-muted);
+            letter-spacing: 1px;
             text-transform: uppercase;
         }
 
-        .divider-line {
-            height: 1px;
-            background: linear-gradient(90deg, transparent, var(--border), transparent);
-            margin: 28px 0;
-        }
-
-        /* ── FLASH MESSAGES ── */
         .flash-box {
             padding: 12px 16px;
-            border-radius: 10px;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 12px;
-            margin-bottom: 20px;
+            border-radius: 12px;
+            font-size: 13px;
+            margin-bottom: 24px;
             display: flex;
             align-items: center;
-            gap: 8px;
-            animation: flashIn 0.4s ease;
+            gap: 10px;
         }
-        @keyframes flashIn {
-            from { opacity: 0; transform: translateX(-10px); }
-            to   { opacity: 1; transform: translateX(0); }
-        }
-        .flash-error   { background: rgba(224,90,109,0.15); border: 1px solid rgba(224,90,109,0.4); color: #f08090; }
-        .flash-success { background: rgba(28,167,166,0.15); border: 1px solid rgba(28,167,166,0.4); color: var(--teal-l); }
-        .flash-info    { background: rgba(94,59,140,0.15);  border: 1px solid rgba(94,59,140,0.4);  color: var(--purple-l); }
+        .flash-error { background: #FEF2F2; color: var(--error); border: 1px solid #FEE2E2; }
+        .flash-success { background: #F0FDF4; color: #166534; border: 1px solid #DCFCE7; }
 
-        /* ── FORM ── */
-        .form-group { margin-bottom: 22px; }
-
+        .form-group { margin-bottom: 24px; }
         label {
             display: block;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 10px;
-            font-weight: 400;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            color: var(--teal);
-            margin-bottom: 8px;
-        }
-
-        .input-wrap { position: relative; }
-
-        .input-icon {
-            position: absolute;
-            left: 14px; top: 50%;
-            transform: translateY(-50%);
-            color: var(--muted);
-            font-size: 14px;
-            pointer-events: none;
-            transition: color 0.3s;
-        }
-
-        input[type="text"],
-        input[type="password"] {
-            width: 100%;
-            padding: 13px 14px 13px 40px;
-            background: rgba(11,28,45,0.6);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            color: var(--white);
-            font-family: 'Crimson Text', serif;
-            font-size: 16px;
-            transition: all 0.3s ease;
-            outline: none;
-        }
-        input::placeholder { color: var(--muted); font-size: 14px; }
-        input:focus {
-            border-color: var(--teal);
-            background: rgba(28,167,166,0.06);
-            box-shadow: 0 0 0 3px rgba(28,167,166,0.12), 0 0 20px rgba(28,167,166,0.08);
-        }
-        input:focus + .input-icon,
-        .input-wrap:focus-within .input-icon { color: var(--teal); }
-
-        /* ── REMEMBER ROW ── */
-        .form-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 28px;
-            font-size: 13px;
-        }
-        .check-label {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-            color: var(--muted);
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 11px;
-            letter-spacing: 1px;
-        }
-        input[type="checkbox"] {
-            width: 16px; height: 16px;
-            accent-color: var(--teal);
-            cursor: pointer;
-        }
-        .link {
-            color: var(--teal);
-            text-decoration: none;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 11px;
-            letter-spacing: 1px;
-            transition: color 0.2s;
-        }
-        .link:hover { color: var(--teal-l); }
-
-        /* ── BUTTON ── */
-        .btn-primary {
-            width: 100%;
-            padding: 15px;
-            background: linear-gradient(135deg, var(--purple) 0%, var(--teal) 100%);
-            color: var(--white);
-            border: none;
-            border-radius: 10px;
-            font-family: 'Cinzel', serif;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 600;
-            letter-spacing: 3px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 16px;
+            background: #F1F5F9;
+            border: 2px solid transparent;
+            border-radius: 12px;
+            font-size: 15px;
+            color: var(--text-main);
+            transition: all 0.2s;
+        }
+
+        input:focus {
+            outline: none;
+            background: #FFFFFF;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(13, 148, 136, 0.1);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
             cursor: pointer;
-            position: relative;
-            overflow: hidden;
-            transition: all 0.3s ease;
-            box-shadow: 0 8px 24px rgba(94,59,140,0.35);
+            transition: all 0.2s;
+            box-shadow: 0 4px 12px rgba(13, 148, 136, 0.2);
         }
-        .btn-primary::before {
-            content: '';
-            position: absolute; inset: 0;
-            background: linear-gradient(135deg, var(--teal) 0%, var(--purple) 100%);
-            opacity: 0;
-            transition: opacity 0.4s ease;
-        }
-        .btn-primary:hover::before { opacity: 1; }
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 32px rgba(28,167,166,0.35);
-        }
-        .btn-primary:active { transform: translateY(0); }
-        .btn-primary span { position: relative; z-index: 1; }
 
-        /* ── FOOTER LINK ── */
-        .card-footer {
+        .btn:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(13, 148, 136, 0.3);
+        }
+
+        .btn:active { transform: translateY(0); }
+
+        .footer-link {
             text-align: center;
-            margin-top: 24px;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 11px;
-            color: var(--muted);
-            letter-spacing: 1px;
+            margin-top: 32px;
+            font-size: 14px;
+            color: var(--text-muted);
         }
-        .card-footer a {
-            color: var(--purple-l);
+
+        .footer-link a {
+            color: var(--primary);
             text-decoration: none;
-            font-weight: 400;
-            transition: color 0.2s;
+            font-weight: 600;
         }
-        .card-footer a:hover { color: var(--teal); }
 
-        /* ── GLITCH TITLE ANIMATION ── */
-        @keyframes glitch {
-            0%,90%,100% { text-shadow: none; }
-            92% { text-shadow: -2px 0 var(--teal), 2px 0 var(--purple); }
-            94% { text-shadow: 2px 0 var(--teal), -2px 0 var(--purple); }
-            96% { text-shadow: none; }
-        }
-        .logo { animation: glitch 8s infinite; }
+        .footer-link a:hover { text-decoration: underline; }
 
-        @media (max-width: 480px) {
-            .wrapper { padding: 16px; }
-            .card { padding: 36px 24px 28px; }
-            .logo { font-size: 28px; }
-        }
     </style>
 </head>
 <body>
-    <div class="bg-canvas"></div>
-    <div class="grid-overlay"></div>
-    <div class="particles" id="particles"></div>
 
-    <div class="wrapper">
-        <div class="card">
-            <div class="logo-wrap">
-                <span class="logo-icon">⟁</span>
-                <span class="logo">PLOTTWIST</span>
-                <span class="tagline">// where reality bends</span>
+    <div class="login-card">
+        <div class="header">
+            <h1 class="logo">PLOTTWIST</h1>
+            <p class="subtitle">Enter the Simulation</p>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-box flash-{{ category }}">
+                        {{ '⚠' if category == 'error' else '✓' }} {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form method="POST">
+            <div class="form-group">
+                <label>Identity</label>
+                <input type="text" name="username" placeholder="Username" required autocomplete="username">
+            </div>
+            <div class="form-group">
+                <label>Access Key</label>
+                <input type="password" name="password" placeholder="••••••••" required autocomplete="current-password">
             </div>
 
-            <!-- Flash messages -->
-            {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                    {% for category, message in messages %}
-                        <div class="flash-box flash-{{ category }}">
-                            {% if category == 'error' %}⚠{% elif category == 'success' %}✓{% else %}ℹ{% endif %}
-                            {{ message }}
-                        </div>
-                    {% endfor %}
-                {% endif %}
-            {% endwith %}
+            <button type="submit" class="btn">Authenticate</button>
+        </form>
 
-            <div class="divider-line"></div>
-
-            <form method="POST" action="{{ url_for('login') }}">
-                <div class="form-group">
-                    <label for="username">// Identity</label>
-                    <div class="input-wrap">
-                        <input type="text" id="username" name="username"
-                               placeholder="Enter your identity" required autocomplete="username">
-                        <span class="input-icon">◈</span>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="password">// Access Key</label>
-                    <div class="input-wrap">
-                        <input type="password" id="password" name="password"
-                               placeholder="••••••••••••" required autocomplete="current-password">
-                        <span class="input-icon">⬡</span>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <label class="check-label">
-                        <input type="checkbox" name="remember" value="on">
-                        Remember session
-                    </label>
-                </div>
-
-                <button type="submit" class="btn-primary">
-                    <span>Authenticate →</span>
-                </button>
-            </form>
-
-            <div class="divider-line"></div>
-
-            <div class="card-footer">
-                New operative? <a href="{{ url_for('register') }}">Create identity</a>
-            </div>
+        <div class="footer-link">
+            New operative? <a href="{{ url_for('register') }}">Create Identity</a>
         </div>
     </div>
 
-    <script>
-        // Generate particles
-        const container = document.getElementById('particles');
-        for (let i = 0; i < 30; i++) {
-            const p = document.createElement('div');
-            p.className = 'particle';
-            p.style.cssText = `
-                left: ${Math.random() * 100}%;
-                animation-duration: ${8 + Math.random() * 15}s;
-                animation-delay: ${Math.random() * 10}s;
-                width: ${Math.random() > 0.7 ? 3 : 2}px;
-                height: ${Math.random() > 0.7 ? 3 : 2}px;
-                background: ${Math.random() > 0.5 ? '#1CA7A6' : '#7B5FBF'};
-            `;
-            container.appendChild(p);
-        }
-
-        // Typewriter cursor on input focus
-        document.querySelectorAll('input[type="text"], input[type="password"]').forEach(input => {
-            input.addEventListener('focus', () => {
-                input.style.caretColor = '#1CA7A6';
-            });
-        });
-    </script>
 </body>
 </html>
