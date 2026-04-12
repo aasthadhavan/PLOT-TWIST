@@ -46,13 +46,13 @@
 </head>
 <body>
     <div class="floating-card">
-        <h1>{{ node.title }}</h1>
+        <h1>{{ node.title if node.title else "STORY FRAGMENT" }}</h1>
         <p>{{ node.text }}</p>
         <div class="choices">
             {% if not is_ending %}
                 {% for choice in node.choices %}
-                    <a href="{{ url_for('play', episode_id=episode_id, node_id=choice.next) }}" class="btn">
-                        {{ choice.text }}
+                    <a href="{{ url_for('play', story_id=story_id, node_id=choice.id) }}" class="btn">
+                        {{ choice.label }}
                     </a>
                 {% endfor %}
             {% else %}
