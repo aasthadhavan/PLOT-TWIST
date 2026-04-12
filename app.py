@@ -2,6 +2,7 @@ import os
 import json
 import requests
 import git
+import time
 from flask import Flask, render_template, redirect, url_for, request, flash
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 
@@ -9,11 +10,75 @@ from flask_login import LoginManager, login_user, login_required, logout_user, c
 from config import Config
 from models import db, User
 
+# --- GLOBAL CACHE ---
+STORY_CACHE = {
+    "data": {},
+    "last_updated": 0,
+    "expiry": 600  # 10 minutes
+}
+
+def get_stories():
+    """
+    Combines local JSON stories with Public API data with caching.
+    """
+    current_time = time.time()
+    
+    # Return cache if valid
+    if STORY_CACHE["data"] and (current_time - STORY_CACHE["last_updated"] < STORY_CACHE["expiry"]):
+        return STORY_CACHE["data"]
+
+    # 1. Local Stories
+    try:
+        with open('stories.json', 'r') as f:
+            stories = json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        stories = {}
+
+    # 2. Public API - Gutendex (Mystery Topic)
+    GUTENBERG_API = "https://gutendex.com/books/?topic=mystery"
+    try:
+        # Lower timeout for better performance
+        response = requests.get(GUTENBERG_API, timeout=2.0)
+        if response.status_code == 200:
+            books = response.json().get('results', [])[:6]
+            for book in books:
+                b_id = f"api_{book['id']}"
+                stories[b_id] = {
+                    "title": f"[ARCHIVE] {book['title']}",
+                    "is_api": True,
+                    "start": {
+                        "text": f"You discover an ancient digital manuscript. Author: {book['authors'][0]['name'] if book['authors'] else 'Unknown'}. This is a read-only historical archive.",
+                        "choices": [] # Terminal nodes for API books
+                    },
+                    # Ensure the 'start' node is accessible directly for the game engine
+                    "start_node": {
+                        "text": f"You discover an ancient digital manuscript. Author: {book['authors'][0]['name'] if book['authors'] else 'Unknown'}. This is a read-only historical archive.",
+                        "choices": []
+                    }
+                }
+    except Exception as e:
+        print(f"API Fetch Error: {e}")
+    
+    # Update Cache
+    STORY_CACHE["data"] = stories
+    STORY_CACHE["last_updated"] = current_time
+    return stories
+
+def checkout_story_branch(repo, username, node_id):
+    # Namespace branches to keep dev environment clean
+    branch_name = f"{Config.GIT_STORY_NAMESPACE}{username}-{node_id}"
+    try:
+        if branch_name in [b.name for b in repo.branches]:
+            repo.git.checkout(branch_name)
+        else:
+            repo.git.checkout('-b', branch_name)
+    except Exception as e:
+        print(f"Git Story Engine Warning: {e}")
+
 def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
 
-    # Initialize extensions
     db.init_app(app)
     
     login_manager = LoginManager(app)
@@ -24,59 +89,11 @@ def create_app():
     def load_user(user_id):
         return User.query.get(int(user_id))
 
-    # --- SCM ENGINE (GIT INTEGRATION) ---
     def get_repo():
         try:
             return git.Repo(os.getcwd())
         except Exception:
             return git.Repo.init(os.getcwd())
-
-    def checkout_story_branch(username, node_id):
-        repo = get_repo()
-        # Namespace branches to keep dev environment clean
-        branch_name = f"{app.config.get('GIT_STORY_NAMESPACE', 'story/')}{username}-{node_id}"
-        try:
-            # Check if branch exists
-            if branch_name in repo.branches:
-                repo.git.checkout(branch_name)
-            else:
-                repo.git.checkout('-b', branch_name)
-        except Exception as e:
-            # Fallback for concurrent access or git issues
-            print(f"Git Story Engine Warning: {e}")
-
-    # --- DATA LAYER (API & LOCAL) ---
-    def get_stories():
-        """
-        Combines local JSON stories with Public API data.
-        """
-        # 1. Local Stories
-        try:
-            with open('stories.json', 'r') as f:
-                stories = json.load(f)
-        except (FileNotFoundError, json.JSONDecodeError):
-            stories = {}
-
-        # 2. Public API - Gutendex (Mystery Topic)
-        GUTENBERG_API = "https://gutendex.com/books/?topic=mystery"
-        try:
-            response = requests.get(GUTENBERG_API, timeout=5)
-            if response.status_code == 200:
-                books = response.json().get('results', [])[:6]
-                for book in books:
-                    b_id = f"api_{book['id']}"
-                    stories[b_id] = {
-                        "title": f"[ARCHIVE] {book['title']}",
-                        "is_api": True,
-                        "start": {
-                            "text": f"You discover an ancient digital manuscript. Author: {book['authors'][0]['name'] if book['authors'] else 'Unknown'}. This is a read-only historical archive.",
-                            "choices": [] # Terminal nodes for API books
-                        }
-                    }
-        except Exception as e:
-            print(f"API Fetch Error: {e}")
-        
-        return stories
 
     # --- ROUTES ---
 
@@ -142,16 +159,24 @@ def create_app():
             flash("Story timeline lost.", "error")
             return redirect(url_for('dashboard'))
         
+        # Mapping fix: API stories have 'start' node defined inside 'start' key usually,
+        # but our engine expects story.get(node_id).
         node = story.get(node_id)
+        
+        # Fallback for API stories if node_id is 'start'
+        if not node and node_id == 'start':
+            node = story.get('start_node') or story.get('start')
+
         if not node:
             flash("Fragment not found.", "error")
             return redirect(url_for('dashboard'))
 
         # Git Engine Integration
         if not story.get('is_api'):
-            checkout_story_branch(current_user.username, node_id)
+            checkout_story_branch(get_repo(), current_user.username, node_id)
 
-        choices = node.get('choices', [])
+        # Ensure choices exist
+        choices = node.get('choices', []) if isinstance(node, dict) else []
         is_ending = len(choices) == 0
 
         return render_template('game.html', 
