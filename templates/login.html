@@ -1,187 +1,280 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PlotTwist — Sign In</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&family=Outfit:wght@300;400;600&family=JetBrains+Mono&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg: #F8FAFC;
-            --card-bg: #FFFFFF;
-            --primary: #0D9488;
-            --primary-hover: #0F766E;
-            --text-main: #1E293B;
-            --text-muted: #64748B;
-            --border: #E2E8F0;
-            --accent: #7C3AED;
-            --error: #EF4444;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        * { margin:0; padding:0; box-sizing: border-box; }
+<title>PlotTwist — Authentication</title>
 
-        body {
-            font-family: 'Outfit', sans-serif;
-            background-color: var(--bg);
-            background-image: 
-                radial-gradient(at 100% 0%, rgba(13, 148, 136, 0.05) 0px, transparent 50%),
-                radial-gradient(at 0% 100%, rgba(124, 58, 237, 0.05) 0px, transparent 50%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--text-main);
-        }
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&family=Outfit:wght@300;400;600&family=JetBrains+Mono&display=swap" rel="stylesheet">
 
-        .login-card {
-            background: var(--card-bg);
-            width: 100%;
-            max-width: 420px;
-            padding: 48px;
-            border-radius: 24px;
-            box-shadow: 0 20px 40px -10px rgba(0,0,0,0.05), 0 0 0 1px rgba(0,0,0,0.02);
-            animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-        }
+<style>
 
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+/* ================= ROOT ================= */
 
-        .header { text-align: center; margin-bottom: 40px; }
-        
-        .logo {
-            font-family: 'Cinzel', serif;
-            font-size: 32px;
-            letter-spacing: 4px;
-            background: linear-gradient(135deg, var(--primary), var(--accent));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 8px;
-        }
+:root{
+    --bg1:#020617;
+    --bg2:#0f172a;
+    --primary:#7C3AED;
+    --accent:#0D9488;
+    --text:#E2E8F0;
+    --muted:#94A3B8;
+    --danger:#EF4444;
+}
 
-        .subtitle {
-            font-size: 14px;
-            color: var(--text-muted);
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
+*{margin:0;padding:0;box-sizing:border-box;}
 
-        .flash-box {
-            padding: 12px 16px;
-            border-radius: 12px;
-            font-size: 13px;
-            margin-bottom: 24px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .flash-error { background: #FEF2F2; color: var(--error); border: 1px solid #FEE2E2; }
-        .flash-success { background: #F0FDF4; color: #166534; border: 1px solid #DCFCE7; }
+body{
+    font-family:'Outfit',sans-serif;
+    color:var(--text);
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:radial-gradient(circle at top,var(--bg2),var(--bg1));
+    overflow:hidden;
+}
 
-        .form-group { margin-bottom: 24px; }
-        label {
-            display: block;
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--text-muted);
-            margin-bottom: 8px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
+/* ================= FLOATING LIGHTS ================= */
 
-        input {
-            width: 100%;
-            padding: 12px 16px;
-            background: #F1F5F9;
-            border: 2px solid transparent;
-            border-radius: 12px;
-            font-size: 15px;
-            color: var(--text-main);
-            transition: all 0.2s;
-        }
+body::before,
+body::after{
+    content:"";
+    position:fixed;
+    width:600px;
+    height:600px;
+    border-radius:50%;
+    filter:blur(120px);
+    opacity:.35;
+    animation:float 10s ease-in-out infinite;
+}
 
-        input:focus {
-            outline: none;
-            background: #FFFFFF;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 4px rgba(13, 148, 136, 0.1);
-        }
+body::before{
+    background:#7C3AED;
+    top:-200px;
+    left:-200px;
+}
 
-        .btn {
-            width: 100%;
-            padding: 14px;
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            box-shadow: 0 4px 12px rgba(13, 148, 136, 0.2);
-        }
+body::after{
+    background:#0D9488;
+    bottom:-200px;
+    right:-200px;
+    animation-direction:reverse;
+}
 
-        .btn:hover {
-            background: var(--primary-hover);
-            transform: translateY(-1px);
-            box-shadow: 0 6px 16px rgba(13, 148, 136, 0.3);
-        }
+@keyframes float{
+    0%,100%{transform:translateY(0);}
+    50%{transform:translateY(40px);}
+}
 
-        .btn:active { transform: translateY(0); }
+/* ================= LOGIN CARD ================= */
 
-        .footer-link {
-            text-align: center;
-            margin-top: 32px;
-            font-size: 14px;
-            color: var(--text-muted);
-        }
+.login-card{
+    width:100%;
+    max-width:430px;
+    padding:50px;
 
-        .footer-link a {
-            color: var(--primary);
-            text-decoration: none;
-            font-weight: 600;
-        }
+    background:rgba(15,23,42,.75);
+    backdrop-filter:blur(20px);
 
-        .footer-link a:hover { text-decoration: underline; }
+    border-radius:26px;
+    border:1px solid rgba(255,255,255,.08);
 
-    </style>
+    box-shadow:
+        0 0 80px rgba(124,58,237,.25),
+        0 25px 60px rgba(0,0,0,.6);
+
+    animation:fadeUp .8s ease;
+}
+
+/* ================= HEADER ================= */
+
+.header{
+    text-align:center;
+    margin-bottom:40px;
+}
+
+.logo{
+    font-family:'Cinzel',serif;
+    font-size:36px;
+    letter-spacing:5px;
+    background:linear-gradient(135deg,var(--primary),var(--accent));
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+}
+
+.subtitle{
+    color:var(--muted);
+    font-size:13px;
+    letter-spacing:2px;
+    margin-top:6px;
+}
+
+/* ================= FLASH ================= */
+
+.flash-box{
+    padding:12px 16px;
+    border-radius:12px;
+    margin-bottom:20px;
+    font-size:14px;
+}
+
+.flash-error{
+    background:#450a0a;
+    color:#fecaca;
+}
+
+.flash-success{
+    background:#022c22;
+    color:#86efac;
+}
+
+/* ================= FORM ================= */
+
+.form-group{
+    margin-bottom:22px;
+}
+
+label{
+    font-size:12px;
+    letter-spacing:1px;
+    color:var(--muted);
+    margin-bottom:8px;
+    display:block;
+}
+
+/* INPUT */
+
+input{
+    width:100%;
+    padding:14px 16px;
+
+    border-radius:12px;
+    border:1px solid rgba(255,255,255,.08);
+
+    background:rgba(255,255,255,.05);
+    color:var(--text);
+
+    font-size:15px;
+    transition:.25s;
+}
+
+input::placeholder{
+    color:#64748B;
+}
+
+input:focus{
+    outline:none;
+    border-color:var(--primary);
+    box-shadow:0 0 15px rgba(124,58,237,.4);
+    background:rgba(255,255,255,.08);
+}
+
+/* ================= BUTTON ================= */
+
+.btn{
+    width:100%;
+    padding:14px;
+    border:none;
+    border-radius:12px;
+
+    font-weight:600;
+    font-size:15px;
+    cursor:pointer;
+
+    background:linear-gradient(135deg,var(--primary),var(--accent));
+    color:white;
+
+    transition:.3s;
+}
+
+.btn:hover{
+    transform:translateY(-2px);
+    box-shadow:0 10px 30px rgba(124,58,237,.4);
+}
+
+/* ================= FOOTER ================= */
+
+.footer-link{
+    text-align:center;
+    margin-top:28px;
+    font-size:14px;
+    color:var(--muted);
+}
+
+.footer-link a{
+    color:#5eead4;
+    text-decoration:none;
+    font-weight:600;
+}
+
+.footer-link a:hover{
+    text-decoration:underline;
+}
+
+/* ================= ANIMATION ================= */
+
+@keyframes fadeUp{
+    from{
+        opacity:0;
+        transform:translateY(30px);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+</style>
 </head>
+
 <body>
 
-    <div class="login-card">
-        <div class="header">
-            <h1 class="logo">PLOTTWIST</h1>
-            <p class="subtitle">Enter the Simulation</p>
-        </div>
+<div class="login-card">
 
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="flash-box flash-{{ category }}">
-                        {{ '⚠' if category == 'error' else '✓' }} {{ message }}
-                    </div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
+<div class="header">
+    <h1 class="logo">PLOTTWIST</h1>
+    <p class="subtitle">ENTER THE SIMULATION</p>
+</div>
 
-        <form method="POST">
-            <div class="form-group">
-                <label>Identity</label>
-                <input type="text" name="username" placeholder="Username" required autocomplete="username">
-            </div>
-            <div class="form-group">
-                <label>Access Key</label>
-                <input type="password" name="password" placeholder="••••••••" required autocomplete="current-password">
-            </div>
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+{% for category, message in messages %}
+<div class="flash-box flash-{{ category }}">
+{{ '⚠' if category=='error' else '✓' }} {{ message }}
+</div>
+{% endfor %}
+{% endif %}
+{% endwith %}
 
-            <button type="submit" class="btn">Authenticate</button>
-        </form>
+<form method="POST">
 
-        <div class="footer-link">
-            New operative? <a href="{{ url_for('register') }}">Create Identity</a>
-        </div>
-    </div>
+<div class="form-group">
+<label>Identity</label>
+<input type="text" name="username"
+placeholder="Username"
+required autocomplete="username">
+</div>
+
+<div class="form-group">
+<label>Access Key</label>
+<input type="password" name="password"
+placeholder="••••••••"
+required autocomplete="current-password">
+</div>
+
+<button type="submit" class="btn">
+Authenticate
+</button>
+
+</form>
+
+<div class="footer-link">
+New operative? 
+<a href="{{ url_for('register') }}">Create Identity</a>
+</div>
+
+</div>
 
 </body>
 </html>

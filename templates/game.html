@@ -1,158 +1,176 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PlotTwist — Simulation</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&family=JetBrains+Mono&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg: #F8FAFC;
-            --card-bg: #FFFFFF;
-            --primary: #0D9488;
-            --accent: #7C3AED;
-            --text-main: #1E293B;
-            --text-muted: #64748B;
-            --border: #E2E8F0;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        * { margin:0; padding:0; box-sizing: border-box; }
+<title>PlotTwist — Simulation</title>
 
-        body {
-            font-family: 'Outfit', sans-serif;
-            background-color: var(--bg);
-            color: var(--text-main);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&family=JetBrains+Mono&display=swap" rel="stylesheet">
 
-        .game-card {
-            background: var(--card-bg);
-            width: 100%;
-            max-width: 800px;
-            padding: 60px;
-            border-radius: 32px;
-            box-shadow: 
-                0 25px 50px -12px rgba(0,0,0,0.05),
-                0 0 0 1px rgba(0,0,0,0.02);
-            animation: fadeIn 0.8s ease;
-        }
+<style>
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: scale(0.98); }
-            to { opacity: 1; transform: scale(1); }
-        }
+body{
+    font-family:'Outfit',sans-serif;
+    background:radial-gradient(circle at top,#0f172a,#020617);
+    color:#E2E8F0;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    margin:0;
+}
 
-        .node-title {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 11px;
-            color: var(--primary);
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            margin-bottom: 24px;
-            display: block;
-        }
+/* CARD */
+.game-card{
+    width:100%;
+    max-width:850px;
+    padding:60px;
+    background:rgba(15,23,42,.85);
+    backdrop-filter:blur(18px);
+    border-radius:30px;
+    border:1px solid rgba(255,255,255,.08);
+    box-shadow:
+        0 0 80px rgba(124,58,237,.25),
+        0 25px 60px rgba(0,0,0,.6);
+    animation:fadeIn .6s ease;
+}
 
-        .story-text {
-            font-size: 24px;
-            line-height: 1.6;
-            font-weight: 300;
-            color: var(--text-main);
-            margin-bottom: 48px;
-        }
+@keyframes fadeIn{
+    from{opacity:0;transform:scale(.96);}
+    to{opacity:1;transform:scale(1);}
+}
 
-        .choices {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
+.node-title{
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;
+    letter-spacing:3px;
+    color:#7C3AED;
+    margin-bottom:25px;
+}
 
-        .choice-btn {
-            padding: 18px 24px;
-            background: #F1F5F9;
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            text-decoration: none;
-            color: var(--text-main);
-            font-weight: 600;
-            font-size: 15px;
-            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+/* STORY TEXT */
+.story-text{
+    font-size:24px;
+    line-height:1.8;
+    margin-bottom:45px;
+    white-space:pre-line;
+}
 
-        .choice-btn:hover {
-            background: #FFFFFF;
-            border-color: var(--primary);
-            transform: translateX(8px);
-            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05);
-            color: var(--primary);
-        }
+/* CHOICES */
+.choices{
+    display:flex;
+    flex-direction:column;
+    gap:18px;
+}
 
-        .choice-btn::after {
-            content: '→';
-            opacity: 0;
-            transform: translateX(-10px);
-            transition: all 0.2s;
-        }
+.choice-btn{
+    padding:18px 22px;
+    text-decoration:none;
+    color:#E2E8F0;
+    background:rgba(255,255,255,.05);
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:14px;
+    font-weight:600;
+    transition:.25s;
+}
 
-        .choice-btn:hover::after {
-            opacity: 1;
-            transform: translateX(0);
-        }
+.choice-btn:hover{
+    background:linear-gradient(135deg,#7C3AED,#0D9488);
+    transform:translateX(10px) scale(1.02);
+    box-shadow:0 10px 40px rgba(124,58,237,.4);
+}
 
-        .ending {
-            text-align: center;
-            padding-top: 20px;
-        }
+/* ENDING */
+.ending{
+    text-align:center;
+    margin-top:20px;
+}
 
-        .btn-exit {
-            display: inline-block;
-            margin-top: 32px;
-            padding: 14px 32px;
-            background: var(--text-main);
-            color: white;
-            border-radius: 12px;
-            text-decoration: none;
-            font-weight: 600;
-            transition: all 0.2s;
-        }
+.btn-exit{
+    display:inline-block;
+    margin-top:30px;
+    padding:14px 30px;
+    border-radius:12px;
+    text-decoration:none;
+    font-weight:600;
+    background:#0D9488;
+    color:white;
+    transition:.2s;
+}
 
-        .btn-exit:hover {
-            background: var(--accent);
-            transform: translateY(-2px);
-        }
+.btn-exit:hover{
+    background:#7C3AED;
+    transform:translateY(-2px);
+}
 
-    </style>
+</style>
 </head>
+
 <body>
 
-    <div class="game-card">
-        <span class="node-title">// {{ node.title if node.title else "SIMULATION_DATA" }}</span>
-        
-        <div class="story-text">
-            {{ node.text }}
-        </div>
+<div class="game-card">
 
-        <div class="choices">
-            {% if not is_ending %}
-                {% for choice in node.choices %}
-                    <a href="{{ url_for('play', story_id=story_id, node_id=choice.id) }}" class="choice-btn">
-                        {{ choice.label }}
-                    </a>
-                {% endfor %}
-            {% else %}
-                <div class="ending">
-                    <p style="color: var(--text-muted); font-size: 14px;">[ SIMULATION CONCLUDED ]</p>
-                    <a href="{{ url_for('dashboard') }}" class="btn-exit">Return to Core</a>
-                </div>
-            {% endif %}
-        </div>
-    </div>
+<!-- TITLE -->
+<span class="node-title">
+{{ node.title if node and node.title else "SIMULATION_DATA" }}
+</span>
+
+<!-- STORY TEXT -->
+<div class="story-text">
+{{ node.text if node else "Loading simulation..." }}
+</div>
+
+<div class="choices">
+
+{% if node and not is_ending %}
+
+    {% if node.choices %}
+        {% for choice in node.choices %}
+            <a href="{{ url_for('play',
+                story_id=story_id,
+                node_id=choice.id) }}"
+               class="choice-btn">
+
+               {{ choice.label }}
+
+            </a>
+        {% endfor %}
+    {% else %}
+        <p>No available actions.</p>
+    {% endif %}
+
+{% else %}
+
+<!-- ENDING SCREEN -->
+<div class="ending">
+
+{% if node and node.ending == "win" %}
+<h2 style="color:#22C55E;font-size:32px;">
+✓ SIMULATION SUCCESS
+</h2>
+<p>You altered destiny successfully.</p>
+
+{% elif node and node.ending == "loss" %}
+<h2 style="color:#EF4444;font-size:32px;">
+✕ SIMULATION FAILED
+</h2>
+<p>The timeline collapsed.</p>
+
+{% else %}
+<h2>[ SIMULATION CONCLUDED ]</h2>
+{% endif %}
+
+<a href="{{ url_for('dashboard') }}" class="btn-exit">
+Return to Core
+</a>
+
+</div>
+
+{% endif %}
+
+</div>
+</div>
 
 </body>
 </html>
