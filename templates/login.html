@@ -1,187 +1,90 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PlotTwist — Sign In</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&family=Outfit:wght@300;400;600&family=JetBrains+Mono&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg: #F8FAFC;
-            --card-bg: #FFFFFF;
-            --primary: #0D9488;
-            --primary-hover: #0F766E;
-            --text-main: #1E293B;
-            --text-muted: #64748B;
-            --border: #E2E8F0;
-            --accent: #7C3AED;
-            --error: #EF4444;
-        }
+{% extends "base.html" %}
 
-        * { margin:0; padding:0; box-sizing: border-box; }
+{% block title %}Login - PlotTwist{% endblock %}
 
-        body {
-            font-family: 'Outfit', sans-serif;
-            background-color: var(--bg);
-            background-image: 
-                radial-gradient(at 100% 0%, rgba(13, 148, 136, 0.05) 0px, transparent 50%),
-                radial-gradient(at 0% 100%, rgba(124, 58, 237, 0.05) 0px, transparent 50%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--text-main);
-        }
+{% block extra_css %}
+    .auth-layout {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: calc(100vh - 170px);
+    }
 
-        .login-card {
-            background: var(--card-bg);
-            width: 100%;
-            max-width: 420px;
-            padding: 48px;
-            border-radius: 24px;
-            box-shadow: 0 20px 40px -10px rgba(0,0,0,0.05), 0 0 0 1px rgba(0,0,0,0.02);
-            animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-        }
+    .auth-card {
+        width: 100%;
+        max-width: 400px;
+        padding: 48px;
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        box-shadow: var(--shadow);
+        animation: cardFade 0.6s ease;
+    }
 
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+    @keyframes cardFade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .header { text-align: center; margin-bottom: 40px; }
-        
-        .logo {
-            font-family: 'Cinzel', serif;
-            font-size: 32px;
-            letter-spacing: 4px;
-            background: linear-gradient(135deg, var(--primary), var(--accent));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 8px;
-        }
+    .auth-header { text-align: center; margin-bottom: 32px; }
+    .auth-header h1 { font-size: 24px; font-weight: 800; letter-spacing: -0.5px; }
+    .auth-header p { color: var(--text-muted); font-size: 14px; margin-top: 4px; }
 
-        .subtitle {
-            font-size: 14px;
-            color: var(--text-muted);
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
+    .form-group { margin-bottom: 20px; }
+    label { display: block; font-size: 12px; font-weight: 700; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+    
+    input {
+        width: 100%;
+        padding: 12px 14px;
+        background: var(--bg);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        color: var(--text-main);
+        font-family: inherit;
+        font-size: 15px;
+        transition: border-color 0.2s;
+    }
+    input:focus { outline: none; border-color: var(--primary); }
 
-        .flash-box {
-            padding: 12px 16px;
-            border-radius: 12px;
-            font-size: 13px;
-            margin-bottom: 24px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .flash-error { background: #FEF2F2; color: var(--error); border: 1px solid #FEE2E2; }
-        .flash-success { background: #F0FDF4; color: #166534; border: 1px solid #DCFCE7; }
+    .flash-msg {
+        padding: 10px 14px;
+        border-radius: 6px;
+        font-size: 13px;
+        margin-bottom: 24px;
+        border-left: 3px solid;
+    }
+    .flash-error { background: #fee2e2; color: #991b1b; border-color: #ef4444; }
+    .flash-success { background: #dcfce7; color: #166534; border-color: #22c55e; }
+{% endblock %}
 
-        .form-group { margin-bottom: 24px; }
-        label {
-            display: block;
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--text-muted);
-            margin-bottom: 8px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        input {
-            width: 100%;
-            padding: 12px 16px;
-            background: #F1F5F9;
-            border: 2px solid transparent;
-            border-radius: 12px;
-            font-size: 15px;
-            color: var(--text-main);
-            transition: all 0.2s;
-        }
-
-        input:focus {
-            outline: none;
-            background: #FFFFFF;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 4px rgba(13, 148, 136, 0.1);
-        }
-
-        .btn {
-            width: 100%;
-            padding: 14px;
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            box-shadow: 0 4px 12px rgba(13, 148, 136, 0.2);
-        }
-
-        .btn:hover {
-            background: var(--primary-hover);
-            transform: translateY(-1px);
-            box-shadow: 0 6px 16px rgba(13, 148, 136, 0.3);
-        }
-
-        .btn:active { transform: translateY(0); }
-
-        .footer-link {
-            text-align: center;
-            margin-top: 32px;
-            font-size: 14px;
-            color: var(--text-muted);
-        }
-
-        .footer-link a {
-            color: var(--primary);
-            text-decoration: none;
-            font-weight: 600;
-        }
-
-        .footer-link a:hover { text-decoration: underline; }
-
-    </style>
-</head>
-<body>
-
-    <div class="login-card">
-        <div class="header">
-            <h1 class="logo">PLOTTWIST</h1>
-            <p class="subtitle">Enter the Simulation</p>
+{% block content %}
+<div class="auth-layout">
+    <div class="auth-card">
+        <div class="auth-header">
+            <h1>Authenticate</h1>
+            <p>Access your primary timeline</p>
         </div>
 
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
-                    <div class="flash-box flash-{{ category }}">
-                        {{ '⚠' if category == 'error' else '✓' }} {{ message }}
-                    </div>
+                    <div class="flash-msg flash-{{ category }}">{{ message }}</div>
                 {% endfor %}
             {% endif %}
         {% endwith %}
 
         <form method="POST">
             <div class="form-group">
-                <label>Identity</label>
-                <input type="text" name="username" placeholder="Username" required autocomplete="username">
+                <label>Email Address</label>
+                <input type="email" name="email" placeholder="agent@plottwist.dev" required>
             </div>
             <div class="form-group">
                 <label>Access Key</label>
-                <input type="password" name="password" placeholder="••••••••" required autocomplete="current-password">
+                <input type="password" name="password" placeholder="••••••••" required>
             </div>
-
-            <button type="submit" class="btn">Authenticate</button>
+            <button type="submit" class="btn btn-primary" style="width: 100%">Sign In</button>
         </form>
 
-        <div class="footer-link">
-            New operative? <a href="{{ url_for('register') }}">Create Identity</a>
+        <div style="text-align: center; margin-top: 32px; font-size: 14px; color: var(--text-muted);">
+            New operative? <a href="{{ url_for('register') }}" style="color: var(--primary); font-weight: 600; text-decoration: none;">Enroll Identity</a>
         </div>
     </div>
-
-</body>
-</html>
+</div>
+{% endblock %}
