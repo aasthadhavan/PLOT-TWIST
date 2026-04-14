@@ -1,4 +1,5 @@
 # PLOT-TWIST: Git-Integrated Narrative Engine
+![PLOT-TWIST CI/CD Pipeline](https://github.com/aasthadhavan/PLOT-TWIST/actions/workflows/ci.yml/badge.svg)
 
 ## 1. Project Title
 **PLOT-TWIST** — An interactive storytelling platform where narrative paths are physically represented by Git branches.
@@ -45,9 +46,8 @@ Our team utilized a **Feature Branching Workflow** to maintain repository health
 ### Pipeline Success
 ![CI/CD Pipeline](https://via.placeholder.com/800x400.png?text=GitHub+Actions+Pipeline+Success+Screenshot)
 ### Deployment Output
-![Deployment Preview](https://via.placeholder.com/800x400.png?text=Vercel+Deployment+Live+Screenshot)
-
----
+*[Space reserved for live deployment link and confirmation screenshot]*
+________________________________________
 
 ## 8. Challenges Faced
 *   **API Latency**: We encountered significant latency while fetching large book texts from the Gutendex API. We solved this by implementing a **Global Caching Layer** that stores story content for one hour.
