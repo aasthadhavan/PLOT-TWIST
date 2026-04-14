@@ -44,9 +44,12 @@ Our team utilized a **Feature Branching Workflow** to maintain repository health
 
 ## 7. Screenshots
 ### Pipeline Success
-![CI/CD Pipeline](https://via.placeholder.com/800x400.png?text=GitHub+Actions+Pipeline+Success+Screenshot)
+<img width="1446" height="808" alt="image" src="https://github.com/user-attachments/assets/a43e61d0-086b-4269-b8ae-68eebf422a9c" />
+
 ### Deployment Output
-*[Space reserved for live deployment link and confirmation screenshot]*
+<img width="1468" height="423" alt="image" src="https://github.com/user-attachments/assets/09ed55c3-103d-42b6-a9d4-467d3934ee38" />
+<img width="1468" height="662" alt="image" src="https://github.com/user-attachments/assets/c66eefe0-6262-4581-8cb3-5329a2aba6a3" />
+
 ________________________________________
 
 ## 8. Challenges Faced
