@@ -1,158 +1,55 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PlotTwist — Simulation</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&family=JetBrains+Mono&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg: #F8FAFC;
-            --card-bg: #FFFFFF;
-            --primary: #0D9488;
-            --accent: #7C3AED;
-            --text-main: #1E293B;
-            --text-muted: #64748B;
-            --border: #E2E8F0;
-        }
+{% extends "base.html" %}
 
-        * { margin:0; padding:0; box-sizing: border-box; }
+{% block title %}Simulation - {{ story_title }}{% endblock %}
 
-        body {
-            font-family: 'Outfit', sans-serif;
-            background-color: var(--bg);
-            color: var(--text-main);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
+{% block extra_css %}
+    .game-layout { max-width: 800px; margin: 0 auto; padding: 40px 20px; }
+    .story-card { padding: 50px; border-radius: 32px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+    .progress-bar { height: 4px; background: var(--border); border-radius: 2px; margin-bottom: 32px; overflow: hidden; }
+    .progress-fill { height: 100%; background: var(--primary); transition: width 0.8s ease; }
+    .story-meta { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--primary); letter-spacing: 2px; margin-bottom: 20px; display: block; opacity: 0.7; }
+    .story-body { font-size: 22px; line-height: 1.6; font-weight: 300; margin-bottom: 40px; }
+    .choices-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .choice-btn { padding: 18px; background: var(--bg); border: 1px solid var(--border); border-radius: 16px; text-decoration: none; color: var(--text-main); font-weight: 600; font-size: 14px; transition: 0.3s; display: flex; justify-content: space-between; align-items: center; }
+    .choice-btn:hover { border-color: var(--primary); color: var(--primary); transform: translateX(5px); }
+    .tree-dots { display: flex; justify-content: center; gap: 10px; margin-top: 40px; }
+    .dot { width: 8px; height: 8px; background: var(--border); border-radius: 50%; transition: 0.3s; }
+    .dot.active { background: var(--primary); box-shadow: 0 0 8px var(--primary); }
+{% endblock %}
 
-        .game-card {
-            background: var(--card-bg);
-            width: 100%;
-            max-width: 800px;
-            padding: 60px;
-            border-radius: 32px;
-            box-shadow: 
-                0 25px 50px -12px rgba(0,0,0,0.05),
-                0 0 0 1px rgba(0,0,0,0.02);
-            animation: fadeIn 0.8s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: scale(0.98); }
-            to { opacity: 1; transform: scale(1); }
-        }
-
-        .node-title {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 11px;
-            color: var(--primary);
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            margin-bottom: 24px;
-            display: block;
-        }
-
-        .story-text {
-            font-size: 24px;
-            line-height: 1.6;
-            font-weight: 300;
-            color: var(--text-main);
-            margin-bottom: 48px;
-        }
-
-        .choices {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-
-        .choice-btn {
-            padding: 18px 24px;
-            background: #F1F5F9;
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            text-decoration: none;
-            color: var(--text-main);
-            font-weight: 600;
-            font-size: 15px;
-            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .choice-btn:hover {
-            background: #FFFFFF;
-            border-color: var(--primary);
-            transform: translateX(8px);
-            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05);
-            color: var(--primary);
-        }
-
-        .choice-btn::after {
-            content: '→';
-            opacity: 0;
-            transform: translateX(-10px);
-            transition: all 0.2s;
-        }
-
-        .choice-btn:hover::after {
-            opacity: 1;
-            transform: translateX(0);
-        }
-
-        .ending {
-            text-align: center;
-            padding-top: 20px;
-        }
-
-        .btn-exit {
-            display: inline-block;
-            margin-top: 32px;
-            padding: 14px 32px;
-            background: var(--text-main);
-            color: white;
-            border-radius: 12px;
-            text-decoration: none;
-            font-weight: 600;
-            transition: all 0.2s;
-        }
-
-        .btn-exit:hover {
-            background: var(--accent);
-            transform: translateY(-2px);
-        }
-
-    </style>
-</head>
-<body>
-
-    <div class="game-card">
-        <span class="node-title">// {{ node.title if node.title else "SIMULATION_DATA" }}</span>
-        
-        <div class="story-text">
-            {{ node.text }}
+{% block content %}
+<div class="game-layout animate-fade-in">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+        <div class="progress-bar" style="flex-grow: 1; margin-bottom: 0;">
+            <div class="progress-fill" style="width: {{ (current_idx + 1) * 10 }}%;"></div>
         </div>
+        <button onclick="showExitModal()" style="margin-left: 20px; background: none; border: 1px solid var(--border); padding: 6px 14px; border-radius: 8px; font-size: 11px; color: var(--text-main); font-weight: 600; cursor: pointer; text-transform: uppercase;">Exit_Simulation</button>
+    </div>
 
-        <div class="choices">
+    <div class="story-card card">
+        <span class="story-meta">// INTERFACE: {{ story_title }} / NODE: {{ current_idx }}</span>
+        <div class="story-body">{{ node.text }}</div>
+
+        <div class="choices-grid">
             {% if not is_ending %}
                 {% for choice in node.choices %}
                     <a href="{{ url_for('play', story_id=story_id, node_id=choice.id) }}" class="choice-btn">
-                        {{ choice.label }}
+                        {{ choice.label }} <span>→</span>
                     </a>
                 {% endfor %}
             {% else %}
-                <div class="ending">
-                    <p style="color: var(--text-muted); font-size: 14px;">[ SIMULATION CONCLUDED ]</p>
-                    <a href="{{ url_for('dashboard') }}" class="btn-exit">Return to Core</a>
+                <div style="grid-column: 1/-1; text-align: center;">
+                    <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 20px;">[ SIMULATION CONCLUDED ]</p>
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-primary">Return to Registry</a>
                 </div>
             {% endif %}
         </div>
     </div>
 
-</body>
-</html>
+    <div class="tree-dots">
+        {% for _ in range(8) %}
+            <div class="dot {{ 'active' if loop.index0 < history|length else '' }}"></div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

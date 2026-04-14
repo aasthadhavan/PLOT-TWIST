@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}PlotTwist{% endblock %}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Poppins:wght@300;400;600&family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Light Mode - Monochrome */
+            --primary: #111827;
+            --secondary: #6B7280;
+            --bg: #FFFFFF;
+            --card-bg: #F9FAFB;
+            --border: #E5E7EB;
+            --text-main: #111827;
+            --text-muted: #6B7280;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        [data-theme='dark'] {
+            /* Dark Mode - Dark Slate */
+            --primary: #F9FAFB;
+            --secondary: #94A3B8;
+            --bg: #0F172A;
+            --card-bg: #1E293B;
+            --border: #334155;
+            --text-main: #F9FAFB;
+            --text-muted: #94A3B8;
+            --shadow: 0 4px 6px -1px rgba(0,0,0,0.5);
+        }
+
+        * { margin:0; padding:0; box-sizing: border-box; }
+        body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--text-main); min-height: 100vh; overflow-x: hidden; }
+
+        nav {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            height: 70px;
+            background: rgba(245, 241, 235, 0.9);
+            backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 40px;
+            z-index: 1000;
+            border-bottom: 1px solid var(--border);
+        }
+
+        [data-theme='dark'] nav { background: rgba(17, 24, 39, 0.9); }
+
+        .logo { font-family: 'Inter', sans-serif; font-size: 20px; color: var(--text-main); text-decoration: none; font-weight: 800; letter-spacing: -0.5px; }
+        .nav-links { display: flex; align-items: center; gap: 32px; }
+        .nav-links a { text-decoration: none; color: var(--text-main); font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+        .nav-links a:hover { color: var(--primary); }
+
+        .btn { display: inline-block; padding: 12px 28px; border-radius: 12px; font-weight: 600; text-decoration: none; text-align: center; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; border: none; font-size: 14px; }
+        .btn-primary {
+            background: var(--primary);
+            color: var(--bg);
+            border: 1px solid var(--border);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            opacity: 0.9;
+        }
+
+        .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 24px; box-shadow: var(--shadow); }
+
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 2000; }
+        .modal-content { background: var(--card-bg); padding: 40px; border-radius: 24px; max-width: 400px; text-align: center; border: 1px solid var(--border); }
+
+        main { padding-top: 100px; min-height: 100vh; }
+
+        .animate-fade-in { animation: fadeIn 0.8s ease forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        {% block extra_css %}{% endblock %}
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="/" class="logo">PLOT-TWIST</a>
+        <div class="nav-links">
+            {% if current_user.is_authenticated %}
+                <a href="{{ url_for('dashboard') }}">My Stories</a>
+                <span style="font-size: 11px; opacity: 0.6;">{{ current_user.username }}</span>
+                <a href="{{ url_for('logout') }}" style="color: var(--primary);">Logout</a>
+            {% else %}
+                <a href="{{ url_for('login') }}">Login</a>
+                <a href="{{ url_for('register') }}">Sign Up</a>
+            {% endif %}
+            <button id="theme-toggle" style="background:none; border:none; cursor:pointer; font-size: 18px;">🌙</button>
+        </div>
+    </nav>
+
+    <div class="modal-overlay" id="exit-modal">
+        <div class="modal-content animate-fade-in">
+            <h3 style="margin-bottom: 16px; font-family: 'Inter', sans-serif; font-weight: 800; letter-spacing: -0.5px;">Terminate Simulation?</h3>
+            <p style="color: var(--text-muted); margin-bottom: 32px; font-size: 14px;">Your neural progress will be indexed in the archives.</p>
+            <div style="display: flex; gap: 12px; justify-content: center;">
+                <button onclick="hideExitModal()" class="btn" style="background: var(--bg); color: var(--text-main);">Stay</button>
+                <a href="{{ url_for('dashboard') }}" class="btn btn-primary">Exit Story</a>
+            </div>
+        </div>
+    </div>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <script>
+        const toggle = document.getElementById('theme-toggle');
+        const theme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', theme);
+        toggle.textContent = theme === 'dark' ? '☀️' : '🌙';
+
+        toggle.addEventListener('click', () => {
+            const current = document.documentElement.getAttribute('data-theme');
+            const next = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', next);
+            localStorage.setItem('theme', next);
+            toggle.textContent = next === 'dark' ? '☀️' : '🌙';
+        });
+
+        function showExitModal() { document.getElementById('exit-modal').style.display = 'flex'; }
+        function hideExitModal() { document.getElementById('exit-modal').style.display = 'none'; }
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

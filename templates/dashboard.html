@@ -1,211 +1,46 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PlotTwist - Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&family=Outfit:wght@300;400;600&family=JetBrains+Mono&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg: #F1F5F9;
-            --header-bg: rgba(255, 255, 255, 0.8);
-            --card-bg: #FFFFFF;
-            --primary: #0D9488;
-            --accent: #7C3AED;
-            --text-main: #1E293B;
-            --text-muted: #64748B;
-            --border: #E2E8F0;
-        }
+{% extends "base.html" %}
 
-        * { margin:0; padding:0; box-sizing: border-box; }
+{% block title %}Story Registry - PlotTwist{% endblock %}
 
-        body {
-            font-family: 'Outfit', sans-serif;
-            background-color: var(--bg);
-            color: var(--text-main);
-            min-height: 100vh;
-        }
+{% block extra_css %}
+    .dashboard-container { max-width: 1200px; margin: 0 auto; padding: 60px 40px; }
+    .header-section { margin-bottom: 50px; border-left: 4px solid var(--primary); padding-left: 20px; }
+    .header-section h1 { font-family: 'Inter', sans-serif; font-size: 32px; font-weight: 800; letter-spacing: -0.5px; }
+    .story-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 32px; }
+    .story-card { padding: 40px; display: flex; flex-direction: column; justify-content: space-between; min-height: 380px; transition: transform 0.3s; }
+    .story-card:hover { transform: translateY(-8px); }
+    .tag { font-size: 10px; font-weight: 700; text-transform: uppercase; color: var(--primary); letter-spacing: 1px; margin-bottom: 12px; display: block; }
+    .title { font-family: 'Inter', sans-serif; font-size: 22px; font-weight: 600; margin-bottom: 12px; }
+    .excerpt { color: var(--text-muted); font-size: 14px; line-height: 1.6; margin-bottom: 24px; }
+    .card-footer { border-top: 1px solid var(--border); padding-top: 20px; display: flex; flex-direction: column; gap: 10px; }
+{% endblock %}
 
-        header {
-            background: var(--header-bg);
-            backdrop-filter: blur(12px);
-            padding: 16px 40px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid var(--border);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
+{% block content %}
+<div class="dashboard-container animate-fade-in">
+    <div class="header-section">
+        <h1>Active Timelines</h1>
+        <p style="color: var(--text-muted);">Synchronizing local simulations and peripheral archives...</p>
+    </div>
 
-        .logo {
-            font-family: 'Cinzel', serif;
-            font-size: 24px;
-            letter-spacing: 2px;
-            font-weight: 600;
-            text-decoration: none;
-            background: linear-gradient(135deg, var(--primary), var(--accent));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .user-nav {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .logout-link {
-            font-size: 13px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--text-muted);
-            text-decoration: none;
-            font-weight: 600;
-            transition: color 0.2s;
-        }
-        .logout-link:hover { color: #EF4444; }
-
-        main {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 60px 20px;
-        }
-
-        .hero {
-            padding: 40px 0;
-            margin-bottom: 40px;
-        }
-
-        .hero h1 {
-            font-size: 42px;
-            font-weight: 600;
-            margin-bottom: 12px;
-            color: var(--text-main);
-        }
-
-        .hero p {
-            font-size: 18px;
-            color: var(--text-muted);
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 24px;
-        }
-
-        .story-card {
-            background: var(--card-bg);
-            border-radius: 20px;
-            padding: 32px;
-            border: 1px solid var(--border);
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .story-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.05), 0 10px 10px -5px rgba(0,0,0,0.02);
-            border-color: var(--primary);
-        }
-
-        .genre {
-            font-size: 11px;
-            font-weight: 600;
-            color: var(--primary);
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            margin-bottom: 12px;
-            display: block;
-        }
-
-        .title {
-            font-size: 22px;
-            font-weight: 600;
-            margin-bottom: 14px;
-            line-height: 1.3;
-        }
-
-        .excerpt {
-            font-size: 15px;
-            color: var(--text-muted);
-            line-height: 1.6;
-            margin-bottom: 24px;
-        }
-
-        .card-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .btn-play {
-            padding: 10px 20px;
-            background: #F1F5F9;
-            color: var(--text-main);
-            border-radius: 10px;
-            text-decoration: none;
-            font-size: 13px;
-            font-weight: 600;
-            transition: all 0.2s;
-        }
-
-        .story-card:hover .btn-play {
-            background: var(--primary);
-            color: white;
-        }
-
-        .api-badge {
-            background: #F0FDFA;
-            color: #0F766E;
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-size: 10px;
-            font-weight: 700;
-        }
-
-    </style>
-</head>
-<body>
-
-    <header>
-        <a href="#" class="logo">PLOTTWIST</a>
-        <div class="user-nav">
-            <span style="font-size: 14px; font-weight: 600;">{{ current_user.username }}</span>
-            <a href="{{ url_for('logout') }}" class="logout-link">Logout</a>
-        </div>
-    </header>
-
-    <main>
-        <section class="hero">
-            <h1>Welcome back.</h1>
-            <p>Select a simulation to begin or resume.</p>
-        </section>
-
-        <div class="grid">
-            {% for story_id, story in stories.items() %}
-                <div class="story-card" onclick="location.href='/play/{{ story_id }}/start'">
-                    {% if story.is_api %}
-                        <span class="genre">ARCHIVE</span>
-                    {% else %}
-                        <span class="genre">SIMULATION</span>
-                    {% endif %}
-                    
+    <div class="story-grid">
+        {% for story_id, story in stories.items() %}
+            <div class="story-card card">
+                <div>
+                    <span class="tag">{% if story.is_api %}ARCHIVE{% else %}SIMULATION{% endif %}</span>
                     <h2 class="title">{{ story.title }}</h2>
-                    <p class="excerpt">{{ story.start.text[:120] }}...</p>
-                    
-                    <div class="card-footer">
-                        {% if story.is_api %}<span class="api-badge">GUTENBERG API</span>{% else %}<span></span>{% endif %}
-                        <span class="btn-play">Begin →</span>
-                    </div>
+                    <p class="excerpt">{{ story.start.text[:140] }}...</p>
                 </div>
-            {% endfor %}
-        </div>
-    </main>
-
-</body>
-</html>
+                
+                <div class="card-footer">
+                    {% if story_id in active_sessions %}
+                        <a href="{{ url_for('play', story_id=story_id, node_id='resume') }}" class="btn btn-primary">Resume Timeline</a>
+                        <a href="{{ url_for('play', story_id=story_id, node_id='start') }}" style="text-align: center; font-size: 11px; text-decoration: none; color: var(--text-muted);">Restart from zero</a>
+                    {% else %}
+                        <a href="{{ url_for('play', story_id=story_id, node_id='start') }}" class="btn btn-primary">Initialize Sync</a>
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
