@@ -4,42 +4,66 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}PlotTwist{% endblock %}</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Poppins:wght@300;400;600&family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&family=Outfit:wght@300;400;600&family=JetBrains+Mono&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* Light Mode - Monochrome */
-            --primary: #111827;
-            --secondary: #6B7280;
-            --bg: #FFFFFF;
-            --card-bg: #F9FAFB;
-            --border: #E5E7EB;
-            --text-main: #111827;
+            /* Final Burgundy Palette */
+            --primary: #6D1F2B;
+            --secondary: #374151;
+            --accent: #9F2F3F;
+            --bg: #F5F1EB;
+            --card-bg: #FFFFFF;
+            --border: #E7E5E4;
+            --text-main: #1F2937;
             --text-muted: #6B7280;
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            --shadow: 0 1px 3px rgba(0,0,0,0.1);
+            --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 12px rgba(109, 31, 43, 0.08);
+            --shadow-lg: 0 12px 24px rgba(0,0,0,0.08);
         }
 
         [data-theme='dark'] {
-            /* Dark Mode - Dark Slate */
-            --primary: #F9FAFB;
-            --secondary: #94A3B8;
-            --bg: #0F172A;
-            --card-bg: #1E293B;
-            --border: #334155;
+            --primary: #9F2F3F;
+            --secondary: #D1D5DB;
+            --bg: #111827;
+            --card-bg: #1F2937;
+            --border: #374151;
             --text-main: #F9FAFB;
-            --text-muted: #94A3B8;
-            --shadow: 0 4px 6px -1px rgba(0,0,0,0.5);
+            --text-muted: #9CA3AF;
         }
 
         * { margin:0; padding:0; box-sizing: border-box; }
-        body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--text-main); min-height: 100vh; overflow-x: hidden; }
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            min-height: 100vh;
+            transition: background-color 0.5s;
+            overflow-x: hidden;
+        }
 
+        /* --- FUN BACKGROUND ANIMATION --- */
+        .bg-fun {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            z-index: -1;
+            background: radial-gradient(circle at 20% 30%, rgba(109, 31, 43, 0.05) 0%, transparent 40%),
+                        radial-gradient(circle at 80% 70%, rgba(55, 65, 81, 0.05) 0%, transparent 40%);
+            animation: bgShift 15s ease-in-out infinite alternate;
+        }
+
+        @keyframes bgShift {
+            0% { transform: scale(1) translate(0, 0); }
+            100% { transform: scale(1.1) translate(2% , 2%); }
+        }
+
+        /* --- NAVIGATION --- */
         nav {
             position: fixed;
             top: 0; left: 0; right: 0;
             height: 70px;
-            background: rgba(245, 241, 235, 0.9);
-            backdrop-filter: blur(10px);
+            background: rgba(245, 241, 235, 0.85);
+            backdrop-filter: blur(12px);
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -47,62 +71,64 @@
             z-index: 1000;
             border-bottom: 1px solid var(--border);
         }
+        [data-theme='dark'] nav { background: rgba(17, 24, 39, 0.85); }
 
-        [data-theme='dark'] nav { background: rgba(17, 24, 39, 0.9); }
-
-        .logo { font-family: 'Inter', sans-serif; font-size: 20px; color: var(--text-main); text-decoration: none; font-weight: 800; letter-spacing: -0.5px; }
+        .logo { font-family: 'Cinzel', serif; font-size: 24px; color: var(--primary); text-decoration: none; font-weight: 600; letter-spacing: 2px; }
         .nav-links { display: flex; align-items: center; gap: 32px; }
         .nav-links a { text-decoration: none; color: var(--text-main); font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
         .nav-links a:hover { color: var(--primary); }
 
-        .btn { display: inline-block; padding: 12px 28px; border-radius: 12px; font-weight: 600; text-decoration: none; text-align: center; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; border: none; font-size: 14px; }
-        .btn-primary {
-            background: var(--primary);
-            color: var(--bg);
-            border: 1px solid var(--border);
+        /* --- BUTTONS --- */
+        .btn { display: inline-block; padding: 12px 32px; border-radius: 14px; font-weight: 600; text-decoration: none; text-align: center; cursor: pointer; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); border: none; font-size: 15px; }
+        .btn-primary { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; box-shadow: var(--shadow-md); }
+        .btn:hover { transform: scale(1.05) translateY(-2px); box-shadow: 0 8px 16px rgba(109, 31, 43, 0.25); }
+        .btn:active { transform: scale(0.98); }
+
+        /* --- GAME CARDS (CLEAN) --- */
+        .card { 
+            background: var(--card-bg); 
+            border: 1px solid var(--border); 
+            border-radius: 28px; 
+            box-shadow: var(--shadow-md); 
+            transition: var(--transition);
         }
+        .card:hover { box-shadow: var(--shadow-lg); }
 
-        .btn:hover {
-            transform: translateY(-2px);
-            opacity: 0.9;
-        }
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.3); backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 2000; }
+        .modal-content { background: var(--card-bg); padding: 40px; border-radius: 24px; max-width: 400px; text-align: center; border: 1px solid var(--border); box-shadow: var(--shadow-lg); }
 
-        .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 24px; box-shadow: var(--shadow); }
+        main { padding-top: 100px; min-height: 100vh; position: relative; }
 
-        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 2000; }
-        .modal-content { background: var(--card-bg); padding: 40px; border-radius: 24px; max-width: 400px; text-align: center; border: 1px solid var(--border); }
-
-        main { padding-top: 100px; min-height: 100vh; }
-
-        .animate-fade-in { animation: fadeIn 0.8s ease forwards; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fade { animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 
         {% block extra_css %}{% endblock %}
     </style>
 </head>
 <body>
+    <div class="bg-fun"></div>
     <nav>
         <a href="/" class="logo">PLOT-TWIST</a>
         <div class="nav-links">
             {% if current_user.is_authenticated %}
-                <a href="{{ url_for('dashboard') }}">My Stories</a>
-                <span style="font-size: 11px; opacity: 0.6;">{{ current_user.username }}</span>
+                <a href="{{ url_for('dashboard') }}">Registry</a>
+                <span style="font-size: 11px; opacity: 0.6; font-family: 'JetBrains Mono'">{{ current_user.username }}</span>
                 <a href="{{ url_for('logout') }}" style="color: var(--primary);">Logout</a>
             {% else %}
-                <a href="{{ url_for('login') }}">Login</a>
-                <a href="{{ url_for('register') }}">Sign Up</a>
+                <a href="{{ url_for('login') }}">Access</a>
+                <a href="{{ url_for('register') }}">Enroll</a>
             {% endif %}
-            <button id="theme-toggle" style="background:none; border:none; cursor:pointer; font-size: 18px;">🌙</button>
+            <button id="theme-toggle" style="background:none; border:none; cursor:pointer; font-size: 20px;">🌙</button>
         </div>
     </nav>
 
     <div class="modal-overlay" id="exit-modal">
-        <div class="modal-content animate-fade-in">
-            <h3 style="margin-bottom: 16px; font-family: 'Inter', sans-serif; font-weight: 800; letter-spacing: -0.5px;">Terminate Simulation?</h3>
-            <p style="color: var(--text-muted); margin-bottom: 32px; font-size: 14px;">Your neural progress will be indexed in the archives.</p>
+        <div class="modal-content animate-fade">
+            <h3 style="margin-bottom: 16px; font-family: 'Cinzel', serif; color: var(--primary);">Terminate Sync?</h3>
+            <p style="color: var(--text-muted); margin-bottom: 32px; font-size: 14px;">Your neural progress will be indexed in the archives for later resumption.</p>
             <div style="display: flex; gap: 12px; justify-content: center;">
-                <button onclick="hideExitModal()" class="btn" style="background: var(--bg); color: var(--text-main);">Stay</button>
-                <a href="{{ url_for('dashboard') }}" class="btn btn-primary">Exit Story</a>
+                <button onclick="hideExitModal()" class="btn" style="background: var(--bg); color: var(--text-main);">Continue</button>
+                <a href="{{ url_for('dashboard') }}" class="btn btn-primary">Suspend</a>
             </div>
         </div>
     </div>

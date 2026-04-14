@@ -27,99 +27,93 @@ def create_app():
     def load_user(user_id):
         return User.query.get(int(user_id))
 
-    # --- SCM ENGINE (GIT INTEGRATION) ---
+    # --- SCM ENGINE (CI/CD READY) ---
     def get_repo():
         try:
             return git.Repo(app.root_path, search_parent_directories=True)
         except Exception:
-            app.logger.warning(f"Git Engine: Repository not found at {app.root_path}. Initializing...")
-            try:
-                if not os.path.exists(app.root_path):
-                    os.makedirs(app.root_path)
-                return git.Repo.init(app.root_path)
-            except Exception as e:
-                app.logger.error(f"Git Engine Critical Failure: {e}")
-                return None
+            return None
 
     def checkout_story_branch(username, node_id):
         repo = get_repo()
-        if not repo: return
+        if not repo: return # Graceful fallback for read-only / serverless
 
+        # Sanitization for CI/CD safety
         clean_user = re.sub(r'[^a-zA-Z0-9_-]', '_', username)
         clean_node = re.sub(r'[^a-zA-Z0-9_-]', '_', node_id)
         branch_name = f"{app.config.get('GIT_STORY_NAMESPACE', 'story/')}{clean_user}-{clean_node}"
         
         try:
-            existing_branches = [b.name for b in repo.branches]
-            if branch_name in existing_branches:
+            if branch_name in [b.name for b in repo.branches]:
                 repo.git.checkout(branch_name)
             else:
                 repo.git.checkout('-b', branch_name)
         except Exception as e:
-            app.logger.warning(f"Git Engine: Could not switch to branch {branch_name}: {e}")
+            app.logger.warning(f"Git Engine: Non-fatal transition error: {e}")
 
-    # --- API CACHING SETUP ---
+    # --- API GLOBAL CACHE ---
     _api_cache = {
-        "data": None,
-        "timestamp": 0,
-        "books_content": {} 
+        "stories": None,
+        "expires_at": 0,
+        "books_db": {}
     }
-    CACHE_DURATION = 3600 
+    CACHE_EXPIRY = 3600 # 1 Hour
 
-    # --- DATA LAYER (API & LOCAL) ---
+    # --- STORY ARCHIVE ENGINE ---
     def get_stories():
-        stories_path = os.path.join(app.root_path, 'stories.json')
+        # Load local archives with absolute pathing for Vercel
+        local_path = os.path.join(app.root_path, 'stories.json')
         try:
-            with open(stories_path, 'r') as f:
+            with open(local_path, 'r') as f:
                 stories = json.load(f)
-        except (FileNotFoundError, json.JSONDecodeError):
+        except Exception:
             stories = {}
 
-        current_time = time.time()
-        if _api_cache["data"] and (current_time - _api_cache["timestamp"] < CACHE_DURATION):
-            api_stories = _api_cache["data"]
+        # Handle Gutendex API Caching
+        now = time.time()
+        if _api_cache["stories"] and now < _api_cache["expires_at"]:
+            api_data = _api_cache["stories"]
         else:
-            api_stories = {}
-            GUTENDEX_API_URL = "https://gutendex.com/books/?topic=mystery"
+            api_data = {}
+            GUTEN_URL = "https://gutendex.com/books/?topic=mystery"
             try:
-                response = requests.get(GUTENDEX_API_URL, timeout=10)
-                if response.status_code == 200:
-                    books = response.json().get('results', [])[:10]
-                    for book in books:
-                        b_id = f"guten_{book['id']}"
-                        api_stories[b_id] = {
+                r = requests.get(GUTEN_URL, timeout=8)
+                if r.status_code == 200:
+                    results = r.json().get('results', [])[:12]
+                    for book in results:
+                        sid = f"api_{book['id']}"
+                        api_data[sid] = {
                             "title": book['title'],
                             "is_api": True,
-                            "author": book['authors'][0]['name'] if book['authors'] else "Unknown",
-                            "text_url": book['formats'].get('text/plain; charset=utf-8') or book['formats'].get('text/plain') or book['formats'].get('text/html'),
+                            "author": book['authors'][0]['name'] if book['authors'] else "Anonymous",
+                            "text_url": book['formats'].get('text/plain; charset=utf-8') or book['formats'].get('text/plain'),
                             "start": {
-                                "text": f"You opening the volume '{book['title']}'. The air smells of digitized parchment. Author: {book['authors'][0]['name'] if book['authors'] else 'Unknown'}.",
-                                "choices": [
-                                    {"label": "Begin Investigation", "id": "chunk_0"}
-                                ]
+                                "text": f"Initializing Archive Access: '{book['title']}'. Analysis suggests author origin: {book['authors'][0]['name'] if book['authors'] else 'Unknown'}.",
+                                "choices": [{"label": "Synchronize Timeline", "id": "chunk_0"}]
                             }
                         }
-                    _api_cache["data"] = api_stories
-                    _api_cache["timestamp"] = current_time
+                    _api_cache["stories"] = api_data
+                    _api_cache["expires_at"] = now + CACHE_EXPIRY
             except Exception:
-                if _api_cache["data"]: api_stories = _api_cache["data"]
-        
-        stories.update(api_stories)
+                api_data = _api_cache["stories"] or {}
+
+        stories.update(api_data)
         return stories
 
-    def get_book_chunks(story_id, url):
-        if story_id in _api_cache["books_content"]:
-            return _api_cache["books_content"][story_id]
+    def fetch_book_chunks(story_id, url):
+        if story_id in _api_cache["books_db"]:
+            return _api_cache["books_db"][story_id]
+        
         try:
-            response = requests.get(url, timeout=10)
-            if response.status_code == 200:
-                full_text = response.text[:20000]
-                raw_chunks = re.split(r'\r\n\r\n|\n\n', full_text)
-                chunks = [c.strip() for c in raw_chunks if len(c.strip()) > 50]
-                _api_cache["books_content"][story_id] = chunks
+            r = requests.get(url, timeout=10)
+            if r.status_code == 200:
+                full_text = r.text[:30000]
+                raw = re.split(r'\n\s*\n', full_text)
+                chunks = [c.strip() for c in raw if len(c.strip()) > 80]
+                _api_cache["books_db"][story_id] = chunks
                 return chunks
         except Exception: pass
-        return []
+        return ["Archive corrupted or inaccessible. Reconnecting..."]
 
     # --- ROUTES ---
 
@@ -127,48 +121,55 @@ def create_app():
     def index():
         if current_user.is_authenticated:
             return redirect(url_for('dashboard'))
-        return redirect(url_for('login'))
+        return render_template('landing.html')
 
     @app.route('/dashboard')
     @login_required
     def dashboard():
         stories = get_stories()
-        active_sessions = {s.story_id: s.current_node for s in GameSession.query.filter_by(user_id=current_user.id).all()}
-        return render_template('dashboard.html', stories=stories, active_sessions=active_sessions)
+        # Resume Tracking
+        sessions = GameSession.query.filter_by(user_id=current_user.id).all()
+        active_ids = {s.story_id: s.current_node for s in sessions}
+        return render_template('dashboard.html', stories=stories, active_sessions=active_ids)
 
     @app.route('/login', methods=['GET', 'POST'])
     def login():
-        if current_user.is_authenticated:
-            return redirect(url_for('dashboard'))
+        if current_user.is_authenticated: return redirect(url_for('dashboard'))
         if request.method == 'POST':
-            username = request.form.get('username')
+            email = request.form.get('email')
             password = request.form.get('password')
-            user = User.query.filter_by(username=username).first()
+            user = User.query.filter_by(email=email).first()
             if user and user.check_password(password):
                 login_user(user)
                 user.update_last_login()
                 return redirect(url_for('dashboard'))
-            flash('Invalid identity or access key.', 'error')
+            flash('Unauthorized access: Invalid credentials.', 'error')
         return render_template('login.html')
 
     @app.route('/register', methods=['GET', 'POST'])
     def register():
         if request.method == 'POST':
             username = request.form.get('username')
+            email = request.form.get('email')
             password = request.form.get('password')
-            if User.query.filter_by(username=username).first():
-                flash('Identity already exists in the system.', 'error')
+            
+            if not re.match(r"[^@]+@[^@]+\.[^@]+", email):
+                flash('Invalid neural-link address format.', 'error')
                 return redirect(url_for('register'))
-            new_user = User(username=username)
-            new_user.set_password(password)
-            db.session.add(new_user)
+            
+            if User.query.filter_by(email=email).first() or User.query.filter_by(username=username).first():
+                flash('Identity already indexed in the registry.', 'error')
+                return redirect(url_for('register'))
+            
+            user = User(username=username, email=email)
+            user.set_password(password)
+            db.session.add(user)
             db.session.commit()
-            flash('Identity verified. You may now authenticate.', 'success')
+            flash('Identity confirmed. You may now authenticate.', 'success')
             return redirect(url_for('login'))
         return render_template('register.html')
 
     @app.route('/logout')
-    @login_required
     def logout():
         logout_user()
         return redirect(url_for('login'))
@@ -176,57 +177,53 @@ def create_app():
     @app.route('/play/<story_id>/<node_id>')
     @login_required
     def play(story_id, node_id):
-        all_stories = get_stories()
-        story = all_stories.get(story_id)
-        if not story:
-            return redirect(url_for('dashboard'))
+        stories = get_stories()
+        story = stories.get(story_id)
+        if not story: return redirect(url_for('dashboard'))
 
-        game_session = GameSession.query.filter_by(user_id=current_user.id, story_id=story_id).first()
-        if not game_session:
-            game_session = GameSession(user_id=current_user.id, story_id=story_id)
-            db.session.add(game_session)
+        # Session persistence logic
+        sess = GameSession.query.filter_by(user_id=current_user.id, story_id=story_id).first()
+        if not sess:
+            sess = GameSession(user_id=current_user.id, story_id=story_id)
+            db.session.add(sess)
         
-        if node_id == "resume":
-            node_id = game_session.current_node
-
+        if node_id == "resume": node_id = sess.current_node
+        
         node = None
         if story.get('is_api') and node_id.startswith('chunk_'):
             idx = int(node_id.split('_')[1])
-            chunks = get_book_chunks(story_id, story.get('text_url'))
+            chunks = fetch_book_chunks(story_id, story.get('text_url'))
             if idx < len(chunks):
                 node = {
                     "text": chunks[idx],
                     "choices": [
-                        {"label": "Continue the path", "id": f"chunk_{idx+1}"},
-                        {"label": "Branch elsewhere", "id": f"chunk_{min(idx+5, len(chunks)-1)}"}
+                        {"label": "Maintain Sequence", "id": f"chunk_{idx+1}"},
+                        {"label": "Alternate Branch", "id": f"chunk_{min(idx+3, len(chunks)-1)}"}
                     ]
                 }
                 if idx >= len(chunks) - 1: node["choices"] = []
             else: node_id = "start"
 
-        if not node: node = story.get(node_id)
-        if not node:
-            node = story.get('start')
-            node_id = 'start'
+        if not node: node = story.get(node_id) or story.get('start')
 
-        game_session.current_node = node_id
-        history = game_session.get_history()
-        if node_id not in history: history.append(node_id)
-        game_session.set_history(history)
+        # Update History & State
+        sess.current_node = node_id
+        hist = sess.get_history()
+        if node_id not in hist: hist.append(node_id)
+        sess.set_history(hist)
         db.session.commit()
 
+        # Git Engine Bridge
         if not story.get('is_api'):
             checkout_story_branch(current_user.username, node_id)
 
-        is_ending = len(node.get('choices', [])) == 0
-
         return render_template('game.html', 
-                               node=node, 
-                               story_id=story_id, 
-                               story_title=story.get('title', 'Unknown Simulation'),
-                               history=history[-8:],
+                               node=node,
+                               story_id=story_id,
+                               story_title=story['title'],
                                current_idx=int(node_id.split('_')[1]) if '_' in node_id else 0,
-                               is_ending=is_ending)
+                               history=hist[-8:],
+                               is_ending=len(node.get('choices', [])) == 0)
 
     return app
 

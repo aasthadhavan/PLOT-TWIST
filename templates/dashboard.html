@@ -4,39 +4,54 @@
 
 {% block extra_css %}
     .dashboard-container { max-width: 1200px; margin: 0 auto; padding: 60px 40px; }
-    .header-section { margin-bottom: 50px; border-left: 4px solid var(--primary); padding-left: 20px; }
-    .header-section h1 { font-family: 'Inter', sans-serif; font-size: 32px; font-weight: 800; letter-spacing: -0.5px; }
-    .story-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 32px; }
-    .story-card { padding: 40px; display: flex; flex-direction: column; justify-content: space-between; min-height: 380px; transition: transform 0.3s; }
-    .story-card:hover { transform: translateY(-8px); }
-    .tag { font-size: 10px; font-weight: 700; text-transform: uppercase; color: var(--primary); letter-spacing: 1px; margin-bottom: 12px; display: block; }
-    .title { font-family: 'Inter', sans-serif; font-size: 22px; font-weight: 600; margin-bottom: 12px; }
-    .excerpt { color: var(--text-muted); font-size: 14px; line-height: 1.6; margin-bottom: 24px; }
-    .card-footer { border-top: 1px solid var(--border); padding-top: 20px; display: flex; flex-direction: column; gap: 10px; }
+    .header-section { margin-bottom: 50px; border-left: 5px solid var(--primary); padding-left: 20px; }
+    .header-section h1 { font-family: 'Cinzel', serif; font-size: 36px; letter-spacing: 2px; }
+    .story-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 32px; }
+    .story-card { 
+        padding: 40px; 
+        display: flex; 
+        flex-direction: column; 
+        justify-content: space-between; 
+        min-height: 420px;
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 32px;
+        box-shadow: var(--shadow-md);
+        transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .story-card:hover { 
+        transform: translateY(-12px); 
+        box-shadow: var(--shadow-lg); 
+        border-color: var(--primary);
+    }
+    .tag { font-size: 11px; font-weight: 800; text-transform: uppercase; color: var(--primary); letter-spacing: 2px; margin-bottom: 16px; display: block; }
+    .title { font-family: 'Cinzel', serif; font-size: 24px; margin-bottom: 16px; line-height: 1.3; }
+    .excerpt { color: var(--text-muted); font-size: 15px; line-height: 1.6; margin-bottom: 24px; }
+    .card-footer { border-top: 1px solid var(--border); padding-top: 24px; display: flex; flex-direction: column; gap: 12px; }
 {% endblock %}
 
 {% block content %}
-<div class="dashboard-container animate-fade-in">
+<div class="dashboard-container animate-fade">
     <div class="header-section">
         <h1>Active Timelines</h1>
-        <p style="color: var(--text-muted);">Synchronizing local simulations and peripheral archives...</p>
+        <p style="color: var(--text-muted);">Synchronizing narrative archives and peripheral data-streams...</p>
     </div>
 
     <div class="story-grid">
         {% for story_id, story in stories.items() %}
             <div class="story-card card">
                 <div>
-                    <span class="tag">{% if story.is_api %}ARCHIVE{% else %}SIMULATION{% endif %}</span>
+                    <span class="tag">{% if story.is_api %}ARCHIVE_DATA{% else %}LOCAL_SIMULATION{% endif %}</span>
                     <h2 class="title">{{ story.title }}</h2>
-                    <p class="excerpt">{{ story.start.text[:140] }}...</p>
+                    <p class="excerpt">{{ story.start.text[:150] }}...</p>
                 </div>
                 
                 <div class="card-footer">
                     {% if story_id in active_sessions %}
-                        <a href="{{ url_for('play', story_id=story_id, node_id='resume') }}" class="btn btn-primary">Resume Timeline</a>
-                        <a href="{{ url_for('play', story_id=story_id, node_id='start') }}" style="text-align: center; font-size: 11px; text-decoration: none; color: var(--text-muted);">Restart from zero</a>
+                        <a href="{{ url_for('play', story_id=story_id, node_id='resume') }}" class="btn btn-primary">Resume Neural Link</a>
+                        <a href="{{ url_for('play', story_id=story_id, node_id='start') }}" style="text-align: center; font-size: 11px; text-decoration: none; color: var(--text-muted); font-weight: 600;">Full Reset Simulation</a>
                     {% else %}
-                        <a href="{{ url_for('play', story_id=story_id, node_id='start') }}" class="btn btn-primary">Initialize Sync</a>
+                        <a href="{{ url_for('play', story_id=story_id, node_id='start') }}" class="btn btn-primary">Initialize Timeline</a>
                     {% endif %}
                 </div>
             </div>
