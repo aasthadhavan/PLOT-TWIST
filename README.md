@@ -45,6 +45,7 @@ Our team utilized a **Feature Branching Workflow** to maintain repository health
 ## 7. Screenshots
 ### Pipeline Success
 ![PLOT-TWIST CI/CD Pipeline](https://github.com/aasthadhavan/PLOT-TWIST/actions/workflows/ci.yml/badge.svg)
+<img width="1340" height="681" alt="WhatsApp Image 2026-04-15 at 3 54 13 PM" src="https://github.com/user-attachments/assets/7674035e-bdb4-4044-9a97-b14f9a31a059" />
 <img width="1137" height="656" alt="image" src="https://github.com/user-attachments/assets/d4b1371a-30f3-494c-9341-00ae63d8bd80" />
 
 ### Deployment Output
