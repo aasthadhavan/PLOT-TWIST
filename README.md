@@ -1,5 +1,5 @@
 # PLOT-TWIST: Git-Integrated Narrative Engine
-![PLOT-TWIST CI/CD Pipeline](https://github.com/aasthadhavan/PLOT-TWIST/actions/workflows/ci.yml/badge.svg)
+
 
 ## 1. Project Title
 **PLOT-TWIST** — An interactive storytelling platform where narrative paths are physically represented by Git branches.
@@ -44,10 +44,16 @@ Our team utilized a **Feature Branching Workflow** to maintain repository health
 
 ## 7. Screenshots
 ### Pipeline Success
-![CI/CD Pipeline](https://via.placeholder.com/800x400.png?text=GitHub+Actions+Pipeline+Success+Screenshot)
+![PLOT-TWIST CI/CD Pipeline](https://github.com/aasthadhavan/PLOT-TWIST/actions/workflows/ci.yml/badge.svg)
+<img width="1137" height="656" alt="image" src="https://github.com/user-attachments/assets/d4b1371a-30f3-494c-9341-00ae63d8bd80" />
+
 ### Deployment Output
-*   **Live Production**: [https://plot-twist-alpha.vercel.app/](https://plot-twist-alpha.vercel.app/)
-*   **Preview Link**: [https://plot-twist-w7k5yyt5e-aasthadhavans-projects.vercel.app/](https://plot-twist-w7k5yyt5e-aasthadhavans-projects.vercel.app/)
+**Live Production**: [https://plot-twist-alpha.vercel.app/](https://plot-twist-alpha.vercel.app/)
+<img width="1468" height="423" alt="image" src="https://github.com/user-attachments/assets/57f76b41-4409-4e63-80f4-3e47ce872f22" />
+<img width="1468" height="662" alt="image" src="https://github.com/user-attachments/assets/1a633be9-9e82-46b5-bbb8-6a4396973d30" />
+
+
+
 ________________________________________
 
 ## 8. Challenges Faced
