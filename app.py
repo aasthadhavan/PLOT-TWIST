@@ -1,9 +1,9 @@
 import os
 import json
 import requests
-import git
 import time
 import re
+import logging
 from datetime import datetime
 from flask import Flask, render_template, redirect, url_for, request, flash
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
@@ -24,8 +24,11 @@ def create_app():
     login_manager.login_message_category = 'info'
 
     # Ensure DB schema is ready (Safe for both local and Vercel /tmp)
-    with app.app_context():
-        db.create_all()
+    try:
+        with app.app_context():
+            db.create_all()
+    except Exception as e:
+        app.logger.error(f"Database Initialization Error: {e}")
 
     @login_manager.user_loader
     def load_user(user_id):
@@ -34,6 +37,7 @@ def create_app():
     # --- SCM ENGINE (CI/CD READY) ---
     def get_repo():
         try:
+            import git
             return git.Repo(app.root_path, search_parent_directories=True)
         except Exception:
             return None
