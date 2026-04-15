@@ -23,6 +23,10 @@ def create_app():
     login_manager.login_view = 'login'
     login_manager.login_message_category = 'info'
 
+    # Ensure DB schema is ready (Safe for both local and Vercel /tmp)
+    with app.app_context():
+        db.create_all()
+
     @login_manager.user_loader
     def load_user(user_id):
         return User.query.get(int(user_id))
@@ -77,7 +81,7 @@ def create_app():
             api_data = {}
             GUTEN_URL = "https://gutendex.com/books/?topic=mystery"
             try:
-                r = requests.get(GUTEN_URL, timeout=8)
+                r = requests.get(GUTEN_URL, timeout=9)
                 if r.status_code == 200:
                     results = r.json().get('results', [])[:12]
                     for book in results:
@@ -94,8 +98,35 @@ def create_app():
                         }
                     _api_cache["stories"] = api_data
                     _api_cache["expires_at"] = now + CACHE_EXPIRY
+                else:
+                    raise Exception("API Status Error")
             except Exception:
-                api_data = _api_cache["stories"] or {}
+                # Optimized Fallback for Demo Reliability
+                api_data = {
+                    "api_fallback_1": {
+                        "title": "The Adventures of Sherlock Holmes",
+                        "is_api": True,
+                        "author": "Arthur Conan Doyle",
+                        "text_url": "https://www.gutenberg.org/files/1661/1661-0.txt",
+                        "start": {"text": "Accessing Archive: Sherlock Holmes. A consulting detective at 221B Baker Street.", "choices": [{"label": "Begin Investigation", "id": "chunk_0"}]}
+                    },
+                    "api_fallback_2": {
+                        "title": "Dracula",
+                        "is_api": True,
+                        "author": "Bram Stoker",
+                        "text_url": "https://www.gutenberg.org/files/345/345-0.txt",
+                        "start": {"text": "Accessing Archive: Dracula. A journey into the Carpathian Mountains.", "choices": [{"label": "Accept Invitation", "id": "chunk_0"}]}
+                    },
+                    "api_fallback_3": {
+                        "title": "The War of the Worlds",
+                        "is_api": True,
+                        "author": "H. G. Wells",
+                        "text_url": "https://www.gutenberg.org/files/36/36-0.txt",
+                        "start": {"text": "Accessing Archive: Martian Invasion. The cylinder pulsates on the heath.", "choices": [{"label": "Observe Crater", "id": "chunk_0"}]}
+                    }
+                }
+                _api_cache["stories"] = api_data
+                _api_cache["expires_at"] = now + 300 # Retry in 5 mins
 
         stories.update(api_data)
         return stories
@@ -217,11 +248,15 @@ def create_app():
         if not story.get('is_api'):
             checkout_story_branch(current_user.username, node_id)
 
+        # Robust index parsing for progress bar
+        parts = node_id.split('_')
+        current_idx = int(parts[1]) if len(parts) > 1 and parts[1].isdigit() else 0
+
         return render_template('game.html', 
                                node=node,
                                story_id=story_id,
                                story_title=story['title'],
-                               current_idx=int(node_id.split('_')[1]) if '_' in node_id else 0,
+                               current_idx=current_idx,
                                history=hist[-8:],
                                is_ending=len(node.get('choices', [])) == 0)
 
