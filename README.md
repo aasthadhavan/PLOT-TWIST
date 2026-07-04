@@ -12,7 +12,8 @@ Our team recognized that traditional interactive fiction often lacks a tangible 
 ---
 
 ## 3. Architecture Diagram
-![PLOT-TWIST Architecture](docs/architecture.png)
+ <img width="500" height="500" alt="image" src="https://github.com/user-attachments/assets/9baac563-999d-4970-b5de-5705621ed7e5" />
+
 *Our system architecture showing the flow from GitHub Actions to Vercel, integrating Flask, Git, and the Gutendex API.*
 
 ---
