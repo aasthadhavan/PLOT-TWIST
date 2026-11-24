@@ -1,4 +1,4 @@
-# PLOT-TWIST: Git-Integrated Narrative Engine
+# PLOT-TWIST!: Git-Integrated Narrative Engine
 
 
 ## 1. Project Title
